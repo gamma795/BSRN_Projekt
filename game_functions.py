@@ -4,8 +4,7 @@ import settings
 
 def setup_new_board(board_size):
     """Sets up a new board matrix filled with 0s"""
-    row = ["0"] * board_size
-    board = [row] * board_size
+    board = [["0" for i in range(board_size)] for j in range(board_size)]
     return board
 
 
