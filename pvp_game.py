@@ -21,9 +21,9 @@ def launch(player_1, player_2, board_size):
     # Choose starting player randomly
     active_player = random.choice([player_1, player_2])
 
-
     # Starting the game
-    print(f'  {active_player["name"]} fägt an. Drücken Sie ENTER wenn nur noch {active_player["name"]} am Computer ist:')
+    print(
+        f'  {active_player["name"]} fägt an. Drücken Sie ENTER wenn nur noch {active_player["name"]} am Computer ist:')
     input()
     while True:
         if active_player == player_1:
