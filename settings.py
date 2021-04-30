@@ -6,9 +6,7 @@ def clear_screen():
 
 def invalid_input():
     """function to display "invalid input" error message"""
-    clear_screen()
-    print("Die Eingabe ist keine gültige Option.")
-
+    print("\n  Die Eingabe ist keine gültige Option.")
 
 def set_board_size():
     """Choose the Size of the board"""
@@ -16,21 +14,23 @@ def set_board_size():
 
     while True:
         try:
-            print("Wählen Sie eine möglich Spielfeldgröße aus:\n")
+            print("  Wählen Sie eine möglich Spielfeldgröße aus:\n")
             for i in range(len(board_size_option)):
-                print(f"{i + 1}: {board_size_option[i]}x{board_size_option[i]}")
+                print(f"   {i + 1}: {board_size_option[i]}x{board_size_option[i]}")
 
-            size = int(
-                input("\n\nIhre Wahl: "))
+            size = int(input("\n\n  Ihre Wahl: "))
+
             if size >= 0 and size <= len(board_size_option):
                 clear_screen()
                 print(
-                    f"Spielfeldgröße wurde auf {board_size_option[size - 1]}x{board_size_option[size - 1]} festgelegt")
+                    f"  Spielfeldgröße wurde auf {board_size_option[size - 1]}x{board_size_option[size - 1]} festgelegt")
                 return board_size_option[size - 1]
                 break;
             else:
+                clear_screen()
                 invalid_input()
         except ValueError:
+            clear_screen()
             invalid_input()
             continue
 
@@ -41,7 +41,7 @@ def game_typ():
         try:
             number_of_human_players = int(
                 input(
-                    "Wählen Sie die gewünschte Spielart:\n\n  1: Player vs Bot \n  2: Player vs Player \n  3: Zurück \n\nIhre Wahl: "))
+                    "  Wählen Sie die gewünschte Spielart:\n\n   1: Player vs Bot \n   2: Player vs Player \n   3: Zurück \n\n  Ihre Wahl: "))
             if number_of_human_players == 1:
                 break;
             elif number_of_human_players == 2:
@@ -49,8 +49,10 @@ def game_typ():
             elif number_of_human_players == 3:
                 break;
             else:
+                clear_screen()
                 invalid_input()
         except ValueError:
+            clear_screen()
             invalid_input()
             continue
     return number_of_human_players
