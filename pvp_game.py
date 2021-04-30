@@ -34,5 +34,5 @@ def launch(player_1, player_2, board_size):
 
         else:
             player_input = game_functions.ask_input_from(player_2, possible_input)
-            (player_1, player_2) = game_functions.update_boards(player_1, player_2, player_input)
+            (player_2, player_1) = game_functions.update_boards(player_2, player_1, player_input)
             active_player = game_functions.switch_player(active_player, player_1, player_2)
