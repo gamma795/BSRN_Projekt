@@ -1,4 +1,10 @@
+import random
+
 import settings
+
+# List of phrases in case of hit or miss
+miss_phrases = ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen", "Du Dödel. Voll verfehlt"]
+hit_phrases = ["Volltreffer", "Hit", "Yippee-ki-yay M*****F*****"]
 
 
 def setup_new_board(board_size):
@@ -206,21 +212,43 @@ def ask_input_from(player, possible_input):
     return player_input
 
 
-# This function is unfinished. It should check the player input in the opponents board and update the board accordingly
 def update_boards(active_player, other_player, player_input):
     """Update the boards"""
 
-    # Convert player input into two int x and y to check the boards at specific place
+    # Convert player input into two int x and y to check the boards at specific place (case with number 9 or lower)
     if len(player_input) == 2:
         y = ord(player_input[0]) - 65
         x = int(player_input[1]) - 1
 
+    # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
     elif len(player_input) == 3:
         y = ord(player_input[0]) - 65
         x = int(player_input[1:3]) - 1
 
-    active_player["guesses"][y][x] = "WG"
+    # Check opponent Board and update the boards accordingly
+    if other_player["board"][y][x] == "0":
+        active_player["guesses"][y][x] = "WG"
+        other_player["board"][y][x] = "WG"
+        # Show input result on the board and display Random Confirmation Message out of the predefine list
+        draw_boards(active_player)
+        print("\n  " + random.choice(miss_phrases))
+        input("  Press Enter to Continue")
 
-    other_player["board"][y][x] = "WG"
+    # Check opponent Board and update the boards accordingly
+    if other_player["board"][y][x] == "S":
+        active_player["guesses"][y][x] = "CG"
+        other_player["board"][y][x] = "HS"
+        # Show input result on the board and display Random Confirmation Message out of the predefine list
+        draw_boards(active_player)
+        print("\n  " + random.choice(hit_phrases))
+        input("  Press Enter to Continue")
 
     return [active_player, other_player]
+
+
+def check_if_won(player_1, player_2):
+    """ Function Checks if one player is out of Ships"""
+    if any('S' in row for row in player_1["board"]) and any('S' in row for row in player_2["board"]):
+        return False
+    else:
+        return True
