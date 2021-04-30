@@ -11,12 +11,12 @@ def setup_new_board(board_size):
 def set_new_player(board_size, other_player_name=" "):
     player = {}
     if other_player_name == " ":
-        player["name"] = str(input("Wie soll der erste Spieler heißen: "))
+        player["name"] = str(input("  Wie soll der erste Spieler heißen: "))
     else:
         while True:
-            player["name"] = str(input("Wie soll der zweite Spieler heißen: "))
+            player["name"] = str(input("  Wie soll der zweite Spieler heißen: "))
             if player["name"] == other_player_name:
-                print("Dieser Name ist schon belegt. Wählen Sie einen anderen Namen.")
+                print("  Dieser Name ist schon belegt. Wählen Sie einen anderen Namen.")
                 continue
             else:
                 break;
@@ -60,9 +60,9 @@ def draw_boards(player):
 
     # Header
     settings.clear_screen()
-    print(f'{player["name"]} ist dran:')
-    print(f"\n      {header_1}{header_1_spacing}{board_spacing}       {header_2}\n")
-    print("      ", end=v)
+    print(f'   {player["name"]} ist dran:')
+    print(f"\n        {header_1}{header_1_spacing}{board_spacing}       {header_2}\n")
+    print("        ", end=v)
     for x in range(len(player["board"][0])):
         if x < 9:
             print(f" {x + 1} ", end=v)
@@ -76,7 +76,7 @@ def draw_boards(player):
         else:
             print(f" {x + 1}", end=v)
 
-    print("\n      ", end=v)
+    print("\n        ", end=v)
     for x in range(len(player["board"][0])):
         print(f"   ", end=v)
 
@@ -84,9 +84,9 @@ def draw_boards(player):
     for x in range(len(player["guesses"][0])):
         print(f"   ", end=v)
 
-    print("\n" + h * 6, end=c)
+    print("\n  " + h * 6, end=c)
     for x in range(len(player["board"][0])):
-        print(h * 3, end=c)
+        print(  h * 3, end=c)
 
     print(board_spacing + h * 6, end=c)  # opponent side
     for x in range(len(player["guesses"][0])):
@@ -95,7 +95,7 @@ def draw_boards(player):
     # Field
 
     for y in range(len(player["board"])):
-        print(f"\n {chr(65 + y)}    ", end=v)
+        print(f"\n   {chr(65 + y)}    ", end=v)
         for x in range(len(player["board"][0])):
             field = field_filling(player["board"][y][x])
             print(field, end=v)
@@ -105,7 +105,7 @@ def draw_boards(player):
             field = field_filling(player["guesses"][y][x])
             print(field, end=v)
 
-        print("\n" + h * 6, end=c)
+        print("\n  " + h * 6, end=c)
         for x in range(len(player["board"][0])):
             print(h * 3, end=c)
 
@@ -147,11 +147,11 @@ def switch_player(active_player, player_1, player_2):
     if active_player == player_1:
         active_player = player_2
         print(
-            f'Jetzt ist {player_2["name"]} dran.\nTauschen Sie die Plätze und drücken Sie Enter wenn {player_1["name"]} nicht mehr schaut')
+            f'  Jetzt ist {player_2["name"]} dran.\n  Tauschen Sie die Plätze und drücken Sie Enter wenn {player_1["name"]} nicht mehr schaut')
     else:
         active_player = player_1
         print(
-            f'Jetzt ist {player_1["name"]} dran.\nTauschen Sie die Plätze und drücken Sie Enter wenn {player_2["name"]} nicht mehr schaut')
+            f'  Jetzt ist {player_1["name"]} dran.\n  Tauschen Sie die Plätze und drücken Sie Enter wenn {player_2["name"]} nicht mehr schaut')
     input()
     settings.clear_screen()
     return active_player
@@ -164,12 +164,13 @@ def ask_input_from(player, possible_input):
     print("\n")
     while True:
         try:
-            player_input = str(input("Was ist hier nächster Zug:")).upper()
-            print(player_input)
+            player_input = str(input("  Was ist hier nächster Zug: ")).upper()
+            if player_input == "EXIT":
+                break;
             if player_input in possible_input:
                 if player_input in player["already_tried"]:
                     draw_boards(player)
-                    print("\nSie haben schon auf dieses Feld geschossen.")
+                    print("\n  Sie haben schon auf dieses Feld geschossen.")
                     continue
                 else:
                     player["already_tried"].append(player_input)
@@ -177,12 +178,12 @@ def ask_input_from(player, possible_input):
                     break;
             else:
                 draw_boards(player)
-                print("\nDas ist keine gültige Eingabe")
+                print("\n  Das ist keine gültige Eingabe")
                 continue
 
         except ValueError:
             draw_boards(player)
-            print("\nDas ist keine gültige Eingabe")
+            print("\n  Das ist keine gültige Eingabe")
             continue
     return player_input
 
@@ -197,10 +198,10 @@ def update_boards(active_player, other_player, player_input):
         y = ord(player_input[0]) - 65
         x = int(player_input[1:3]) - 1
 
-    print(active_player["guesses"])
+
     active_player["guesses"][y][x] = "WG"
-    print(active_player["guesses"])
+
     other_player["board"][y][x] = "WG"
-    print(other_player["board"])
+
 
     return [active_player, other_player]
