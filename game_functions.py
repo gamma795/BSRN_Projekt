@@ -181,7 +181,7 @@ def switch_player(active_player, player_1, player_2):
     return active_player
 
 
-# Player input
+# Player input to attack
 def ask_input_from(player, possible_input):
     """Ask for player input and checks against list of possible inputs and already tried"""
     draw_boards(player)
@@ -195,6 +195,41 @@ def ask_input_from(player, possible_input):
                 if player_input in player["already_tried"]:
                     draw_boards(player)
                     print("\n  Sie haben schon auf dieses Feld geschossen.")
+                    continue
+                else:
+                    player["already_tried"].append(player_input)
+                    print(player["already_tried"])
+                    break;
+            else:
+                draw_boards(player)
+                print("\n  Das ist keine gültige Eingabe")
+                continue
+
+        except ValueError:
+            draw_boards(player)
+            print("\n  Das ist keine gültige Eingabe")
+            continue
+    return player_input
+
+
+# Methode zum Setzen von Schiffen
+def ask_input_for_ship(player, possible_input, ship, feld, zahl_der_felder):
+    """Ask for player input to set a ship and checks against list of possible inputs and already tried"""
+    draw_boards(player)
+    print("\n")
+    while True:
+        try:
+            # Gibt an welcher Teil von Schiff z.B 2/3
+            print("  Schiff %d Feld %d/%d " % (ship, (feld + 1), (zahl_der_felder)))
+
+            # Nimmt Input und kontrolliert
+            player_input = str(input("  Setze ein Schiff: ")).upper()
+            if player_input == "EXIT":
+                break;
+            if player_input in possible_input:
+                if player_input in player["already_tried"]:
+                    draw_boards(player)
+                    print("\n  Dieses Feld ist bereits besetzt.")
                     continue
                 else:
                     player["already_tried"].append(player_input)
@@ -246,9 +281,108 @@ def update_boards(active_player, other_player, player_input):
     return [active_player, other_player]
 
 
-def check_if_won(player_1, player_2):
+# Prüft ob der Spieler gewonnen hat
+def check_if_won(player_1_numer_of_ships,
+                 player_2_numer_of_ships):  # , player_1_numer_of_ships, player_2_numer_of_ships):
     """ Function Checks if one player is out of Ships"""
-    if any('S' in row for row in player_1["board"]) and any('S' in row for row in player_2["board"]):
-        return False
-    else:
+    if player_1_numer_of_ships == 0 or player_2_numer_of_ships == 0:
         return True
+    else:
+        return False
+
+
+# Fragt nach wie viele Schiffe man setzen will
+def number_of_ships():
+    while True:
+        ships_num = int(input("  Wie viele Schiffe wollen Sie platzieren:"))
+        if ships_num >= 3 and ships_num < 6:
+            break
+        else:
+            print("  Sie müssen mindestens 3 und maximal 5 Schiffe platzieren:")
+    return ships_num
+
+
+# Gibt zurück wie viele Schiffe von jeder Größe (als dict)
+def set_ship_distribution(number_of_ships):
+    small_ship = 0  # 2 Felder groß
+    medium_ship = 0  # 3 Felder groß
+    big_ship = 0  # 4 Felder groß
+
+    # Verteilung der Schiffe auf groß, klein und mittelgroß
+
+    if number_of_ships == 3:
+        small_ship = 1
+        medium_ship = 1
+        big_ship = 1
+
+    elif number_of_ships == 4:
+        small_ship = 2
+        medium_ship = 1
+        big_ship = 1
+
+    elif number_of_ships == 5:
+        small_ship = 2
+        medium_ship = 2
+        big_ship = 1
+
+    shiffs_verteilung = {
+        "smal": small_ship,
+        "medium": medium_ship,
+        "big": big_ship
+
+    }
+    return shiffs_verteilung
+
+
+# Gibt die Zahl der Felder zurück, die ein Schiff hat
+def ret_ship_len(key):
+    if key == "smal":
+        ret = 2
+    elif key == "medium":
+        ret = 3
+    # "big"
+    else:
+        ret = 4
+
+    return ret
+
+
+# Diese Funktion gib die Anzahl aller 'S' in einer Liste
+# Wichtig um die Zahl aller Schiffe einer Person auszugeben
+
+def list_len(liste_mit_allen_schiffen):
+    schiffe_gesamtzahl = 0
+
+    for zeilen in range(len(liste_mit_allen_schiffen)):
+        for spalten in range(len(liste_mit_allen_schiffen)):
+
+            if liste_mit_allen_schiffen[zeilen][spalten] == "S":
+                schiffe_gesamtzahl += 1
+
+    return schiffe_gesamtzahl
+
+
+# Prüft ob Eingabe ein Treffer im Feld vom Gegner ist
+# Gibt aktuelle Zahl der aktiven gegnerischen Schiffe zurück
+def check_if_hit(active_player_input, other_player, player_numer_of_ships):
+    if len(active_player_input) == 2:
+        # y = Buchstabe
+        # x = Zahl
+
+        y = ord(active_player_input[0]) - 65
+        x = int(active_player_input[1]) - 1
+
+    # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
+    elif len(active_player_input) == 3:
+        y = ord(active_player_input[0]) - 65
+        x = int(active_player_input[1:3]) - 1
+
+        # Check opponent Board and update the boards accordingly
+    if other_player["board"][y][x] == "0":
+        pass
+
+    # Check opponent Board and update the boards accordingly
+    if other_player["board"][y][x] == "S" or other_player["board"][y][x] == "HS":
+        return player_numer_of_ships - 1
+    else:
+        return player_numer_of_ships
