@@ -1,0 +1,143 @@
+import menu
+
+
+def field_filling(value):
+    """Sets how the Board position will be displayed and translates board info into graphics"""
+    if value == "0":  # empty field
+        return "   "
+    elif value == "S" or value == "Ca" or value == "Ba" or value == "Pa" or value == "Su" or value == "De":  # ship Carrier, Battleship, Cruiser, Submarine or Destroyer
+        return "███"
+    elif value == "S_Hit" or value == "Ca_Hit" or value == "Ba_Hit" or value == "Pa_Hit" or value == "Su_Hit" or value == "De_Hit":  # hit ship
+        return "▒X▒"
+    elif value == "SS":  # sunk ship
+        return "░X░"
+    elif value == "WG":  # wrong guess
+        return " O "
+    elif value == "CG":  # correct guess
+        return " X "
+
+
+def boards_to_blueprint(player, board_spacing):
+    # Defines how big the Blueprint is going to be and fills it with empty spaces
+    blueprint_height = len(player["board"]) * 2 + 3
+    blueprint_width = 1 + (len(player["board"][0]) * 2 + 3) * 2 + board_spacing
+    blueprint = [["   " for i in range(blueprint_width)] for j in range(blueprint_height)]
+
+    # Fill in the players board with space in between for the walls
+    for y in range(len(player["board"])):
+        for x in range(len(player["board"][0])):
+            blueprint[y * 2 + 3][x * 2 + 4] = player["board"][y][x]
+
+    # Fill in the players guess board with space in between for the walls
+    for y in range(len(player["guesses"])):
+        for x in range(len(player["guesses"][0])):
+            blueprint[y * 2 + 3][x * 2 + 4 + len(player["board"]) * 2 + 3 + board_spacing] = player["guesses"][y][x]
+
+    # Column numbering on both boards
+    for x in range(len(player["board"][0])):
+        if x + 1 < 10:
+            blueprint[0][x * 2 + 4] = " " + str(x + 1) + " "
+            blueprint[0][x * 2 + 4 + len(player["board"]) * 2 + 3 + board_spacing] = " " + str(x + 1) + " "
+        else:
+            blueprint[0][x * 2 + 4] = " " + str(x + 1)
+            blueprint[0][x * 2 + 4 + len(player["board"]) * 2 + 3 + board_spacing] = " " + str(x + 1)
+
+    # Row Letter on both boards
+    for y in range(len(player["board"])):
+        blueprint[y * 2 + 3][1] = " " + chr(65 + y) + " "
+        blueprint[y * 2 + 3][x * 2 + 6 + board_spacing] = " " + chr(65 + y) + " "
+
+    # Filling in the walls
+    for y in range(blueprint_height):
+        for x in range(blueprint_width):
+            # Filling in the vertical walls
+            if (x > 2 and x < (len(player["board"]) * 2 + 4) and x % 2 == 1) or (
+                    x > (len(player["board"]) * 2 + 5 + board_spacing) and x < blueprint_width and x % 2 == 1):
+                blueprint[y][x] = "│"
+
+            # Filling in the horizontal walls
+            if (x > 0 and x < (len(player["board"]) * 2 + 4) or (x > (
+                    len(player["board"]) * 2 + 3 + board_spacing) and x < blueprint_width)) and y > 1 and y % 2 == 0:
+                blueprint[y][x] = "───"
+
+            # Filling in the cross section of the walls
+            if x % 2 == 1 and y % 2 == 0 and ((x > 2 and y > 1 and x < (len(player["board"]) * 2 + 3)) or (
+                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width)):
+                blueprint[y][x] = "┼"
+
+            # Cleaning up the right most wall on both boards
+            if y % 2 == 0 and y > 1 and (x == (len(player["board"]) * 2 + 3) or x == blueprint_width - 1):
+                blueprint[y][x] = "┤"
+
+            # Cleaning up the lowest wall on both boards
+            if y == blueprint_height - 1 and x % 2 == 1 and ((x > 2 and x < (len(player["board"]) * 2 + 3)) or (
+                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width)):
+                blueprint[y][x] = "┴"
+
+            # Putting the corner on both boards
+            if y == blueprint_height - 1 and (x == (len(player["board"]) * 2 + 3) or x == blueprint_width - 1):
+                blueprint[y][x] = "┘"
+
+    # Joins two ship pieces if they belong to the same ship
+    for y in range(blueprint_height):
+        for x in range(blueprint_width):
+            if x % 2 == 0 and y % 2 == 0 and y > 2 and y < blueprint_height - 2 and (
+                    (x > 2 and x < (len(player["board"]) * 2 + 3)) or (
+                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width)):
+                if blueprint[y - 1][x][0:2] == blueprint[y + 1][x][0:2] and blueprint[y - 1][x] != "0" and \
+                        blueprint[y - 1][x] != "WG" and blueprint[y - 1][x] != "CG":
+                    if "H" in blueprint[y - 1][x] and "H" in blueprint[y + 1][x]:
+                        blueprint[y][x] = "▒▒▒"
+                    else:
+                        blueprint[y][x] = "███"
+            if x % 2 == 1 and y % 2 == 1 and y > 2 and y < blueprint_height - 1 and (
+                    (x > 2 and x < (len(player["board"]) * 2 + 3)) or (
+                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width - 1)):
+                if blueprint[y][x - 1][0:2] == blueprint[y][x + 1][0:2] and blueprint[y][x - 1] != "0" and blueprint[y][
+                    x - 1] != "WG" and blueprint[y][x - 1] != "CG":
+                    if "H" in blueprint[y][x + 1] and "H" in blueprint[y][x - 1]:
+                        blueprint[y][x] = "▒"
+                    else:
+                        blueprint[y][x] = "█"
+
+    # Replaces the ships names with the symbolic form to be printed
+    for y in range(len(player["board"])):
+        for x in range(len(player["board"][0])):
+            blueprint[y * 2 + 3][x * 2 + 4] = field_filling(player["board"][y][x])
+    # Replaces the guesses names with the symbolic form to be printed
+    for y in range(len(player["guesses"])):
+        for x in range(len(player["guesses"][0])):
+            blueprint[y * 2 + 3][x * 2 + 4 + len(player["board"]) * 2 + 3 + board_spacing] = field_filling(
+                player["guesses"][y][x])
+
+    return blueprint
+
+
+def draw_boards(player):
+    # Titels of the boards
+    header_1 = "Ihr Spielfeld"
+    header_2 = "Das Spielfeld des Gegners"
+    sub_header = "Anzahl an lebenden Schiffen: "
+
+    # Spacing between the two boards depended on titel length
+    board_spacing = 5  # Has to be an odd number
+    final_spacing = " " * int(board_spacing + ((board_spacing + 1) / 2) * 2)
+    header_1_spacing = " " * (len(player["board"][0]) * 4 - len(header_1))
+    sub_header_spacing = " " * (len(player["board"][0]) * 4 - len(sub_header) - 1)
+
+    # Create a blueprint to be printed
+    blueprint = boards_to_blueprint(player, board_spacing)
+
+    # Print the Titels and Sub-headers
+    menu.clear_screen()
+    print(f'   {player["name"]} ist dran:')
+    print(f"\n        {header_1}{header_1_spacing}{final_spacing}       {header_2}")
+    print(
+        f"        {sub_header}{player['ships_left']}{sub_header_spacing}{final_spacing}       {sub_header}{player['enemy_ships_left']}\n")
+    print("\n")
+
+    #Print the boards
+    for y in blueprint:
+        for x in y:
+            print(f"{x}", end="")
+        print("\n", end="")
