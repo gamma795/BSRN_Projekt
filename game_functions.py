@@ -42,22 +42,42 @@ def set_new_player(board_size, other_player_name=" "):
 
 # Gibt zurück wie viele Schiffe von jeder Größe (als dict)
 def set_ship_distribution(number_of_ships):
-    patrol_boat = {"name": "Patrouillenboot", "size": 2, "symbol": "Pa"}  # 2 Felder groß
-    submarine = {"name": "U-Boot", "size": 3, "symbol": "Su"}  # 3 Felder groß
-    destroyer = {"name": "Zerstörer", "size": 3, "symbol": "De"}  # 3 Felder groß
-    battleship = {"name": "Schlachtschiff", "size": 4, "symbol": "Ba"}  # 4 Felder groß
-    carrier = {"name": "Flugzeugträger", "size": 5, "symbol": "Ca"}  # 5 Felder groß
+    patrol_boat1 = {"name": "Patrouillenboot", "size": 2, "symbol": "Pa1"}  # 2 Felder groß
+    patrol_boat2 = {"name": "Patrouillenboot", "size": 2, "symbol": "Pa2"}
+    patrol_boat3 = {"name": "Patrouillenboot", "size": 2, "symbol": "Pa3"}
+    patrol_boat4 = {"name": "Patrouillenboot", "size": 2, "symbol": "Pa4"}
+    submarine1 = {"name": "U-Boot", "size": 3, "symbol": "Su1"}  # 3 Felder groß
+    submarine2 = {"name": "U-Boot", "size": 3, "symbol": "Su2"}
+    destroyer = {"name": "Zerstörer", "size": 3, "symbol": "Des"}  # 3 Felder groß
+    battleship1 = {"name": "Schlachtschiff", "size": 4, "symbol": "Ba1"}  # 4 Felder groß
+    battleship2 = {"name": "Schlachtschiff", "size": 4, "symbol": "Ba2"}
+    carrier = {"name": "Flugzeugträger", "size": 5, "symbol": "Car"}  # 5 Felder groß
 
     # Verteilung der Schiffe
 
     if number_of_ships == 3:
-        ship_list = [patrol_boat, submarine, battleship]
+        ship_list = [battleship1, submarine1, patrol_boat1]
 
     elif number_of_ships == 4:
-        ship_list = [patrol_boat, submarine, destroyer, battleship]
+        ship_list = [battleship1, destroyer, submarine1, patrol_boat1]
 
     elif number_of_ships == 5:
-        ship_list = [patrol_boat, submarine, destroyer, battleship, carrier]
+        ship_list = [carrier, battleship1, destroyer, submarine1, patrol_boat1]
+
+    elif number_of_ships == 6:
+        ship_list = [carrier, battleship1, destroyer, submarine1, patrol_boat1, patrol_boat2]
+
+    elif number_of_ships == 7:
+        ship_list = [carrier, battleship1, destroyer, submarine1, submarine2, patrol_boat1, patrol_boat2]
+
+    elif number_of_ships == 8:
+        ship_list = [carrier, battleship1, destroyer, submarine1, submarine2, patrol_boat1, patrol_boat2, patrol_boat3]
+
+    elif number_of_ships == 9:
+        ship_list = [carrier, battleship1, battleship2, destroyer, submarine1, submarine2, patrol_boat1, patrol_boat2, patrol_boat3]
+
+    elif number_of_ships == 10:
+        ship_list = [carrier, battleship1, battleship2, destroyer, submarine1, submarine2, patrol_boat1, patrol_boat2, patrol_boat3, patrol_boat4]
 
     return ship_list
 

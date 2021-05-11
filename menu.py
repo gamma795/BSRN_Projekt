@@ -76,7 +76,7 @@ def set_board_size():
     # Locked in this loop until valid option is select and "break;" is reached
     while True:
         try:
-            print("  Wählen Sie eine möglich Spielfeldgröße aus:\n")
+            print("  Wählen Sie eine möglich Spielfeldgröße aus [Standard = 10]: \n")
 
             # Print possible board sizes and ask player to choose
             for i in range(len(board_size_option)):
@@ -132,12 +132,12 @@ def game_typ():
 def set_number_of_ships():
     while True:
         try:
-            ships_num = int(input("  Wie viele Schiffe wollen Sie platzieren: "))
+            ships_num = int(input("  Wie viele Schiffe wollen Sie platzieren [Standard = 5] : "))
             if ships_num >= 3 and ships_num < 11:
                 break;
             else:
                 clear_screen()
-                print("  Sie müssen mindestens 3 und maximal 5 Schiffe platzieren: ")
+                print("  Sie müssen mindestens 3 und maximal 10 Schiffe platzieren: ")
 
         except ValueError:
             clear_screen()

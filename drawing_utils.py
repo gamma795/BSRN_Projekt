@@ -3,17 +3,23 @@ import menu
 
 def field_filling(value):
     """Sets how the Board position will be displayed and translates board info into graphics"""
-    if value == "0":  # empty field
+    # empty field
+    if value == "0":
         return "   "
-    elif value == "S" or value == "Ca" or value == "Ba" or value == "Pa" or value == "Su" or value == "De":  # ship Carrier, Battleship, Cruiser, Submarine or Destroyer
+    # ship Carrier, Battleship, Cruiser, Submarine or Destroyer
+    elif value in ["Pa1", "Pa2", "Pa3", "Pa4", "Su1", "Su2", "Des", "Ba1", "Ba2", "Car"]:
         return "███"
-    elif value == "S_Hit" or value == "Ca_Hit" or value == "Ba_Hit" or value == "Pa_Hit" or value == "Su_Hit" or value == "De_Hit":  # hit ship
+    # hit ship
+    elif value in ["Pa1_Hit", "Pa2_Hit", "Pa3_Hit", "Pa4_Hit", "Su1_Hit", "Su2_Hit", "Des_Hit", "Ba1_Hit", "Ba2_Hit", "Car_Hit"]:
         return "▒X▒"
-    elif value == "SS":  # sunk ship
+    # sunk ship
+    elif value == "SS":
         return "░X░"
-    elif value == "WG":  # wrong guess
+    # wrong guess
+    elif value == "WG":
         return " O "
-    elif value == "CG":  # correct guess
+    # correct guess
+    elif value == "CG":
         return " X "
 
 
@@ -47,15 +53,18 @@ def boards_to_blueprint(player, board_spacing):
         blueprint[y * 2 + 3][1] = " " + chr(65 + y) + " "
         blueprint[y * 2 + 3][x * 2 + 6 + board_spacing] = " " + chr(65 + y) + " "
 
-    # Filling in the walls
+    # Filling in the walls for both boards
+    # First board has 2 < x < length of the original board *2 + 4 because of the walls, empty left border and lettering
+    # Second board start at x = length of the original board *2 + 4 + the spacing between the boards   and   ends at x = the width of the full blueprint
+
     for y in range(blueprint_height):
         for x in range(blueprint_width):
-            # Filling in the vertical walls
+            # Filling in the vertical walls for both boards. They all have odd x coordinate
             if (x > 2 and x < (len(player["board"]) * 2 + 4) and x % 2 == 1) or (
-                    x > (len(player["board"]) * 2 + 5 + board_spacing) and x < blueprint_width and x % 2 == 1):
+                    x > (len(player["board"]) * 2 + 4 + board_spacing) and x < blueprint_width and x % 2 == 1):
                 blueprint[y][x] = "│"
 
-            # Filling in the horizontal walls
+            # Filling in the horizontal walls. They all have even y coordinate
             if (x > 0 and x < (len(player["board"]) * 2 + 4) or (x > (
                     len(player["board"]) * 2 + 3 + board_spacing) and x < blueprint_width)) and y > 1 and y % 2 == 0:
                 blueprint[y][x] = "───"
@@ -84,17 +93,22 @@ def boards_to_blueprint(player, board_spacing):
             if x % 2 == 0 and y % 2 == 0 and y > 2 and y < blueprint_height - 2 and (
                     (x > 2 and x < (len(player["board"]) * 2 + 3)) or (
                     x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width)):
-                if blueprint[y - 1][x][0:2] == blueprint[y + 1][x][0:2] and blueprint[y - 1][x] != "0" and \
+
+                if blueprint[y - 1][x][0:3] == blueprint[y + 1][x][0:3] and blueprint[y - 1][x] != "0" and \
                         blueprint[y - 1][x] != "WG" and blueprint[y - 1][x] != "CG":
+
                     if "H" in blueprint[y - 1][x] and "H" in blueprint[y + 1][x]:
                         blueprint[y][x] = "▒▒▒"
                     else:
                         blueprint[y][x] = "███"
+
             if x % 2 == 1 and y % 2 == 1 and y > 2 and y < blueprint_height - 1 and (
                     (x > 2 and x < (len(player["board"]) * 2 + 3)) or (
                     x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width - 1)):
-                if blueprint[y][x - 1][0:2] == blueprint[y][x + 1][0:2] and blueprint[y][x - 1] != "0" and blueprint[y][
+
+                if blueprint[y][x - 1][0:3] == blueprint[y][x + 1][0:3] and blueprint[y][x - 1] != "0" and blueprint[y][
                     x - 1] != "WG" and blueprint[y][x - 1] != "CG":
+
                     if "H" in blueprint[y][x + 1] and "H" in blueprint[y][x - 1]:
                         blueprint[y][x] = "▒"
                     else:
@@ -104,6 +118,7 @@ def boards_to_blueprint(player, board_spacing):
     for y in range(len(player["board"])):
         for x in range(len(player["board"][0])):
             blueprint[y * 2 + 3][x * 2 + 4] = field_filling(player["board"][y][x])
+
     # Replaces the guesses names with the symbolic form to be printed
     for y in range(len(player["guesses"])):
         for x in range(len(player["guesses"][0])):
@@ -136,7 +151,7 @@ def draw_boards(player):
         f"        {sub_header}{player['ships_left']}{sub_header_spacing}{final_spacing}       {sub_header}{player['enemy_ships_left']}\n")
     print("\n")
 
-    #Print the boards
+    # Print the boards
     for y in blueprint:
         for x in y:
             print(f"{x}", end="")
