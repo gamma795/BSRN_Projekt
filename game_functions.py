@@ -17,34 +17,20 @@ def set_new_player(board_size, other_player_name=" "):
     """Creates a new Player with empty board and scores and asks for a name"""
     player = {}
 
-    # If there is no named player yet, just asks for new name
+    # If there is no named player yet, just ask for new name
     if other_player_name == " ":
-        while True:
-            player["name"] = str(input("  Wie soll der erste Spieler heißen: "))
-            if player["name"] not in ["", " ", "   ", "    ", "     ", "      "] and len(player["name"]) < 13:
-                break
-            else:
-                menu.clear_screen()
-                print("  Der Name darf nicht Leer sein, und darf max 12 Zeichen haben")
-                continue
+        player["name"] = str(input("  Wie soll der erste Spieler heißen: "))
 
-    # Else if a named player already exists, asks for new name and compares to other players name. Only leaves input loop when the two names are different
+    # Else if a named player already exists, ask for new name and compares to other players name
     else:
-        menu.clear_screen()
         while True:
             player["name"] = str(input("  Wie soll der zweite Spieler heißen: "))
-
             if player["name"] == other_player_name:
-                menu.clear_screen()
                 print("  Dieser Name ist schon belegt. Wählen Sie einen anderen Namen.")
 
-            elif player["name"] not in ["", " ", "   ", "    ", "     ", "      ", "       ", "        ", "         ",
-                                        "          ", "           ", "            "] and len(player["name"]) < 13:
-                break
-
+            # Only leaves input loop when the two names are different
             else:
-                menu.clear_screen()
-                print("  Der Name darf nicht Leer sein, und darf max 12 Zeichen haben")
+                break;
 
     # Set up a new Empty personnal board, new guesses board and empty list of tried fields
     player["board"] = setup_new_board(board_size)
@@ -102,7 +88,7 @@ def choose_ship_placement_methode(player, possible_input, ship_list):
     """Choice between randomly distributing the ships or deciding yourself"""
     menu.clear_screen()
     print(
-        f'  {player["name"]} ist dran.\n\n')
+        f'  {player["name"]} ist dran.\n')
     print("   1. Schiffe selber platzieren\n   2. Schiffe zufällig auf dem Feld verteilen\n\n")
 
     while True:
@@ -128,7 +114,7 @@ def choose_ship_placement_methode(player, possible_input, ship_list):
             else:
                 menu.clear_screen()
                 print(
-                    f'  {player["name"]} ist dran.\n\n')
+                    f'  {player["name"]} ist dran.\n')
                 print("   1. Schiffe selber platzieren\n   2. Schiffe zufällig auf dem Feld verteilen")
                 menu.invalid_input()
 
@@ -136,7 +122,7 @@ def choose_ship_placement_methode(player, possible_input, ship_list):
         except ValueError:
             menu.clear_screen()
             print(
-                f'  {player["name"]} ist dran.\n\n')
+                f'  {player["name"]} ist dran.\n')
             print("   1. Schiffe selber platzieren\n   2. Schiffe zufällig auf dem Feld verteilen")
             menu.invalid_input()
             continue
@@ -154,6 +140,9 @@ def ship_placement(player, possible_input, ship_list):
             try:
                 input_ship_front = str(
                     input(f"  Dein {ship['name']} ist {ship['size']} Felder groß. Wo soll die Spitze liegen? ")).upper()
+
+                if input_ship_front == "EXIT":
+                    break;
 
                 if input_ship_front not in possible_input:
                     drawing_utils.draw_boards(player)
@@ -415,15 +404,15 @@ def update_boards(active_player, other_player, player_input):
     # Check opponent Board and update the boards accordingly
     else:
         last_target = other_player["board"][y][x]
-        if last_target == "Pa":
+        if "Pa" in last_target:
             last_target_name = "Patrouillenboot"
-        elif last_target == "Su":
+        elif "Su" in last_target:
             last_target_name = "U-Boot"
-        elif last_target == "De":
+        elif "De" in last_target:
             last_target_name = "Zerstörer"
-        elif last_target == "Ba":
+        elif "Ba" in last_target:
             last_target_name = "Schlachtschiff"
-        elif last_target == "Ca":
+        elif "Ca" in last_target:
             last_target_name = "Flugzeugträger"
 
         active_player["guesses"][y][x] = "CG"
