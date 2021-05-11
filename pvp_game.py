@@ -66,7 +66,11 @@ def launch(player_1, player_2, settings_values):
 
             # Option to return to main settings_menu
             if player_input == "EXIT":
-                break;
+                leave = menu.leave_game()
+                if leave == True:
+                    break;
+                else:
+                    continue
 
             # Check if hit and Update the boards
             (player_1, player_2) = game_functions.update_boards(player_1, player_2, player_input)
@@ -88,7 +92,11 @@ def launch(player_1, player_2, settings_values):
 
             # Option to return to main menu
             if player_input == "EXIT":
-                break;
+                leave = menu.leave_game()
+                if leave == True:
+                    break;
+                else:
+                    continue
 
             # Update the boards
             (player_2, player_1) = game_functions.update_boards(player_2, player_1, player_input)

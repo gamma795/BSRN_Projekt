@@ -145,3 +145,23 @@ def set_number_of_ships():
             continue
 
     return ships_num
+
+
+def leave_game():
+    clear_screen()
+    while True:
+        try:
+
+            player_input = input("  Wollen Sie wirklich das Spiel verlassen? (y/n) : ")
+            if player_input == "y":
+                return True
+            elif player_input == "n":
+                return False
+            else:
+                clear_screen()
+                print(" Ungültige eingabe. Tippen Sie y für Ja oder n für nein.")
+
+        except ValueError:
+            clear_screen()
+            print(" Ungültige eingabe. Tippen Sie y für Ja oder n für nein.")
+            continue
