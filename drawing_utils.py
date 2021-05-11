@@ -10,7 +10,8 @@ def field_filling(value):
     elif value in ["Pa1", "Pa2", "Pa3", "Pa4", "Su1", "Su2", "Des", "Ba1", "Ba2", "Car"]:
         return "███"
     # hit ship
-    elif value in ["Pa1_Hit", "Pa2_Hit", "Pa3_Hit", "Pa4_Hit", "Su1_Hit", "Su2_Hit", "Des_Hit", "Ba1_Hit", "Ba2_Hit", "Car_Hit"]:
+    elif value in ["Pa1_Hit", "Pa2_Hit", "Pa3_Hit", "Pa4_Hit", "Su1_Hit", "Su2_Hit", "Des_Hit", "Ba1_Hit", "Ba2_Hit",
+                   "Car_Hit"]:
         return "▒X▒"
     # sunk ship
     elif value == "SS":
@@ -60,27 +61,27 @@ def boards_to_blueprint(player, board_spacing):
     for y in range(blueprint_height):
         for x in range(blueprint_width):
             # Filling in the vertical walls for both boards. They all have odd x coordinate
-            if (x > 2 and x < (len(player["board"]) * 2 + 4) and x % 2 == 1) or (
-                    x > (len(player["board"]) * 2 + 4 + board_spacing) and x < blueprint_width and x % 2 == 1):
+            if x % 2 == 1 and ((2 < x < (len(player["board"]) * 2 + 4)) or (
+                    (len(player["board"]) * 2 + 4 + board_spacing) < x < blueprint_width)):
                 blueprint[y][x] = "│"
 
             # Filling in the horizontal walls. They all have even y coordinate
-            if (x > 0 and x < (len(player["board"]) * 2 + 4) or (x > (
-                    len(player["board"]) * 2 + 3 + board_spacing) and x < blueprint_width)) and y > 1 and y % 2 == 0:
+            if y > 1 and y % 2 == 0 and (0 < x < (len(player["board"]) * 2 + 4) or (
+                    len(player["board"]) * 2 + 3 + board_spacing < x < blueprint_width - 1)):
                 blueprint[y][x] = "───"
 
             # Filling in the cross section of the walls
-            if x % 2 == 1 and y % 2 == 0 and ((x > 2 and y > 1 and x < (len(player["board"]) * 2 + 3)) or (
-                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width)):
+            if y > 1 and y % 2 == 0 and x % 2 == 1 and ((2 < x < (len(player["board"]) * 2 + 3)) or (
+                    (len(player["board"]) * 2 + 5 + board_spacing) < x < blueprint_width)):
                 blueprint[y][x] = "┼"
 
             # Cleaning up the right most wall on both boards
-            if y % 2 == 0 and y > 1 and (x == (len(player["board"]) * 2 + 3) or x == blueprint_width - 1):
+            if y > 1 and y % 2 == 0 and (x == (len(player["board"]) * 2 + 3) or x == blueprint_width - 1):
                 blueprint[y][x] = "┤"
 
             # Cleaning up the lowest wall on both boards
-            if y == blueprint_height - 1 and x % 2 == 1 and ((x > 2 and x < (len(player["board"]) * 2 + 3)) or (
-                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width)):
+            if y == blueprint_height - 1 and x % 2 == 1 and ((2 < x < (len(player["board"]) * 2 + 3)) or (
+                    (len(player["board"]) * 2 + 5 + board_spacing) < x < blueprint_width)):
                 blueprint[y][x] = "┴"
 
             # Putting the corner on both boards
@@ -90,9 +91,9 @@ def boards_to_blueprint(player, board_spacing):
     # Joins two ship pieces if they belong to the same ship
     for y in range(blueprint_height):
         for x in range(blueprint_width):
-            if x % 2 == 0 and y % 2 == 0 and y > 2 and y < blueprint_height - 2 and (
-                    (x > 2 and x < (len(player["board"]) * 2 + 3)) or (
-                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width)):
+            if y % 2 == 0 and (2 < y < blueprint_height - 2) and x % 2 == 0 and (
+                    (2 < x < (len(player["board"]) * 2 + 3)) or (
+                    (len(player["board"]) * 2 + 5 + board_spacing) < x < blueprint_width)):
 
                 if blueprint[y - 1][x][0:3] == blueprint[y + 1][x][0:3] and blueprint[y - 1][x] != "0" and \
                         blueprint[y - 1][x] != "WG" and blueprint[y - 1][x] != "CG":
@@ -102,7 +103,7 @@ def boards_to_blueprint(player, board_spacing):
                     else:
                         blueprint[y][x] = "███"
 
-            if x % 2 == 1 and y % 2 == 1 and y > 2 and y < blueprint_height - 1 and (
+            if y % 2 == 1 and (2 < y < blueprint_height - 1) and x % 2 == 1 and (
                     (x > 2 and x < (len(player["board"]) * 2 + 3)) or (
                     x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width - 1)):
 
