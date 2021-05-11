@@ -6,7 +6,7 @@ import game_functions
 
 # Settings defaults values
 # could import statistic from existing file instead if we implement this feature
-settings_values = {"board_size": 10, "number_of_ships": 3}
+settings_values = {"board_size": 10, "number_of_ships": 5}
 language_pack = languages.deutsch
 player_1 = {"name": "Player 1", "score": 0}
 player_2 = {"name": "Player 2", "score": 0}

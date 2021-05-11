@@ -40,19 +40,19 @@ def launch(player_1, player_2, settings_values):
     # Ships placement phase
 
     if active_player == player_1:
-        player_1 = game_functions.ship_placement(player_1, possible_input, ship_list)
+        player_1 = game_functions.choose_ship_placement_methode(player_1, possible_input, ship_list)
         menu.clear_screen()
         print(
             f'  {player_2["name"]} ist dran. Drücken Sie ENTER wenn nur noch {player_2["name"]} am Computer ist:')
         input()
-        player_2 = game_functions.ship_placement(player_2, possible_input, ship_list)
+        player_2 = game_functions.choose_ship_placement_methode(player_2, possible_input, ship_list)
     elif active_player == player_2:
-        player_2 = game_functions.ship_placement(player_2, possible_input, ship_list)
+        player_2 = game_functions.choose_ship_placement_methode(player_2, possible_input, ship_list)
         menu.clear_screen()
         print(
             f'  {player_1["name"]} ist dran. Drücken Sie ENTER wenn nur noch {player_1["name"]} am Computer ist:')
         input()
-        player_1 = game_functions.ship_placement(player_1, possible_input, ship_list)
+        player_1 = player_1 = game_functions.choose_ship_placement_methode(player_1, possible_input, ship_list)
 
     menu.clear_screen()
     print(

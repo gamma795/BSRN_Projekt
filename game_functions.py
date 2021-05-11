@@ -40,55 +40,75 @@ def set_new_player(board_size, other_player_name=" "):
     return player
 
 
-def switch_player(active_player, player_1, player_2):
-    """Switches active player and waits for confirmation that only active player is lookig"""
-    menu.clear_screen()
-    if active_player == player_1:
-        active_player = player_2
-        print(
-            f'  Jetzt ist {player_2["name"]} dran.\n  Tauschen Sie die Plätze und drücken Sie Enter wenn {player_1["name"]} nicht mehr schaut')
-    else:
-        active_player = player_1
-        print(
-            f'  Jetzt ist {player_1["name"]} dran.\n  Tauschen Sie die Plätze und drücken Sie Enter wenn {player_2["name"]} nicht mehr schaut')
-    input()
-    menu.clear_screen()
-    return active_player
+# Gibt zurück wie viele Schiffe von jeder Größe (als dict)
+def set_ship_distribution(number_of_ships):
+    patrol_boat = {"name": "Patrouillenboot", "size": 2, "symbol": "Pa"}  # 2 Felder groß
+    submarine = {"name": "U-Boot", "size": 3, "symbol": "Su"}  # 3 Felder groß
+    destroyer = {"name": "Zerstörer", "size": 3, "symbol": "De"}  # 3 Felder groß
+    battleship = {"name": "Schlachtschiff", "size": 4, "symbol": "Ba"}  # 4 Felder groß
+    carrier = {"name": "Flugzeugträger", "size": 5, "symbol": "Ca"}  # 5 Felder groß
+
+    # Verteilung der Schiffe
+
+    if number_of_ships == 3:
+        ship_list = [patrol_boat, submarine, battleship]
+
+    elif number_of_ships == 4:
+        ship_list = [patrol_boat, submarine, destroyer, battleship]
+
+    elif number_of_ships == 5:
+        ship_list = [patrol_boat, submarine, destroyer, battleship, carrier]
+
+    return ship_list
 
 
-# Player input to attack
-def ask_input_from(player, possible_input):
-    """Ask for player input and checks against list of possible inputs and already tried"""
-    drawing_utils.draw_boards(player)
-    print("\n")
+def choose_ship_placement_methode(player, possible_input, ship_list):
+    """Choice between randomly distributing the ships or deciding yourself"""
+    menu.clear_screen()
+    print(
+        f'  {player["name"]} ist dran.\n')
+    print("   1. Schiffe selber platzieren\n   2. Schiffe zufällig auf dem Feld verteilen\n\n")
+
     while True:
         try:
-            player_input = str(input("  Was ist hier nächster Zug: ")).upper()
-            if player_input == "EXIT":
-                break;
-            if player_input in possible_input:
-                if player_input in player["already_tried"]:
-                    drawing_utils.draw_boards(player)
-                    print("\n  Sie haben schon auf dieses Feld geschossen.")
-                    continue
-                else:
-                    player["already_tried"].append(player_input)
-                    break;
+            player_input = int(input("  Ihre Wahl: "))
+
+            # Player chooses ship placement
+            if player_input == 1:
+                menu.clear_screen()
+
+                player = ship_placement(player, possible_input, ship_list)
+                print("\n")
+                break
+
+            # Random placement of ships
+            elif player_input == 2:
+                menu.clear_screen()
+                player = random_ship_placement(player, possible_input, ship_list)
+                print("\n")
+                break
+
+            # Catch wrong input
             else:
-                drawing_utils.draw_boards(player)
-                print("\n  Das ist keine gültige Eingabe")
-                continue
+                menu.clear_screen()
+                print(
+                    f'  {player["name"]} ist dran.\n')
+                print("   1. Schiffe selber platzieren\n   2. Schiffe zufällig auf dem Feld verteilen")
+                menu.invalid_input()
 
+            # Catch wrong value input
         except ValueError:
-            drawing_utils.draw_boards(player)
-            print("\n  Das ist keine gültige Eingabe")
+            menu.clear_screen()
+            print(
+                f'  {player["name"]} ist dran.\n')
+            print("   1. Schiffe selber platzieren\n   2. Schiffe zufällig auf dem Feld verteilen")
+            menu.invalid_input()
             continue
-    return player_input
+    return player
 
 
-# Methode zum Setzen von Schiffen
 def ship_placement(player, possible_input, ship_list):
-    """Ask for player input to set a ship and checks against list of possible inputs and already tried"""
+    """Decide where the ship are placed"""
     drawing_utils.draw_boards(player)
     print("\n")
     occupied_fields = []
@@ -138,95 +158,38 @@ def ship_placement(player, possible_input, ship_list):
                 print("\n  Das ist keine gültige Eingabe")
                 continue
 
+    drawing_utils.draw_boards(player)
+    print("\n")
+    input("  Press Enter to continue")
     return player
 
 
-def update_boards(active_player, other_player, player_input):
-    """Update the boards"""
+def random_ship_placement(player, possible_input, ship_list):
+    """Randomly distribute the ships on the board"""
+    for ship in ship_list:
+        while True:
+            try:
+                input_ship_front = random.choice(possible_input)
+                available_spaces = check_space(input_ship_front, ship["size"], player)
+                if available_spaces == []:
+                    continue
 
-    # Convert player input into two int x and y to check the boards at specific place (case with number 9 or lower)
-    if len(player_input) == 2:
-        y = ord(player_input[0]) - 65
-        x = int(player_input[1]) - 1
+                else:
+                    input_ship_back = random.choice(available_spaces)
+                    if input_ship_back in available_spaces:
+                        player = place_ship_down(player, ship, input_ship_front, input_ship_back)
+                        print("\n")
+                break;
 
-    # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
-    elif len(player_input) == 3:
-        y = ord(player_input[0]) - 65
-        x = int(player_input[1:3]) - 1
+            except ValueError:
+                drawing_utils.draw_boards(player)
+                print("\n  Das ist keine gültige Eingabe")
+                continue
 
-    # Check opponent Board and update the boards accordingly
-    if other_player["board"][y][x] == "0":
-        active_player["guesses"][y][x] = "WG"
-        other_player["board"][y][x] = "WG"
-        # Show input result on the board and display Random Confirmation Message out of the predefine list
-        drawing_utils.draw_boards(active_player)
-        print("\n  " + random.choice(miss_phrases))
-        input("  Press Enter to Continue")
-
-    # Check opponent Board and update the boards accordingly
-    else:
-        last_target = other_player["board"][y][x]
-        if last_target == "Pa":
-            last_target_name = "Patrouillenboot"
-        elif last_target == "Su":
-            last_target_name = "U-Boot"
-        elif last_target == "De":
-            last_target_name = "Zerstörer"
-        elif last_target == "Ba":
-            last_target_name = "Schlachtschiff"
-        elif last_target == "Ca":
-            last_target_name = "Flugzeugträger"
-
-        active_player["guesses"][y][x] = "CG"
-        other_player["board"][y][x] += "_Hit"
-        # Show input result on the board and display Random Confirmation Message out of the predefine list
-
-        if any(last_target in row for row in other_player["board"]):
-            drawing_utils.draw_boards(active_player)
-            print("\n  " + random.choice(hit_phrases), end=". ")
-            # print(f"Sie haben das gegnerische {last_target_name} getroffen!")    # Alternative if Ship typ is to be named
-            print(f"Sie haben ein gegnerisches Schiffe getroffen!")
-        else:
-            other_player["ships_left"] -= 1
-            active_player["enemy_ships_left"] -= 1
-            drawing_utils.draw_boards(active_player)
-            print("\n  " + random.choice(hit_phrases), end=". ")
-            print(f"Sie haben das gegnerische {last_target_name} versenkt!")
-
-        input("  Press Enter to Continue")
-
-    return [active_player, other_player]
-
-
-# Prüft ob der Spieler gewonnen hat
-def check_if_won(player_1, player_2):
-    """ Function Checks if one player is out of Ships"""
-    if player_1["ships_left"] == 0 or player_2["ships_left"] == 0:
-        return True
-    else:
-        return False
-
-
-# Gibt zurück wie viele Schiffe von jeder Größe (als dict)
-def set_ship_distribution(number_of_ships):
-    patrol_boat = {"name": "Patrouillenboot", "size": 2, "symbol": "Pa"}  # 2 Felder groß
-    submarine = {"name": "U-Boot", "size": 3, "symbol": "Su"}  # 3 Felder groß
-    destroyer = {"name": "Zerstörer", "size": 3, "symbol": "De"}  # 3 Felder groß
-    battleship = {"name": "Schlachtschiff", "size": 4, "symbol": "Ba"}  # 4 Felder groß
-    carrier = {"name": "Flugzeugträger", "size": 5, "symbol": "Ca"}  # 5 Felder groß
-
-    # Verteilung der Schiffe
-
-    if number_of_ships == 3:
-        ship_list = [patrol_boat, submarine, battleship]
-
-    elif number_of_ships == 4:
-        ship_list = [patrol_boat, submarine, destroyer, battleship]
-
-    elif number_of_ships == 5:
-        ship_list = [patrol_boat, submarine, destroyer, battleship, carrier]
-
-    return ship_list
+    drawing_utils.draw_boards(player)
+    print("\n")
+    input("  Press Enter to continue")
+    return player
 
 
 def check_space(player_input, ship_size, player):
@@ -346,3 +309,115 @@ def place_ship_down(player, ship, input_ship_front, input_ship_back):
                 player["board"][front_y + i][back_x] = ship["symbol"]
 
     return player
+
+
+# Player input to attack
+def ask_input_from(player, possible_input):
+    """Ask for player input and checks against list of possible inputs and already tried"""
+    drawing_utils.draw_boards(player)
+    print("\n")
+    while True:
+        try:
+            player_input = str(input("  Was ist Ihr nächster Zug: ")).upper()
+            if player_input == "EXIT":
+                break;
+            if player_input in possible_input:
+                if player_input in player["already_tried"]:
+                    drawing_utils.draw_boards(player)
+                    print("\n  Sie haben schon auf dieses Feld geschossen.")
+                    continue
+                else:
+                    player["already_tried"].append(player_input)
+                    break;
+            else:
+                drawing_utils.draw_boards(player)
+                print("\n  Das ist keine gültige Eingabe")
+                continue
+
+        except ValueError:
+            drawing_utils.draw_boards(player)
+            print("\n  Das ist keine gültige Eingabe")
+            continue
+    return player_input
+
+
+def switch_player(active_player, player_1, player_2):
+    """Switches active player and waits for confirmation that only active player is lookig"""
+    menu.clear_screen()
+    if active_player == player_1:
+        active_player = player_2
+        print(
+            f'  Jetzt ist {player_2["name"]} dran.\n  Tauschen Sie die Plätze und drücken Sie Enter wenn {player_1["name"]} nicht mehr schaut')
+    else:
+        active_player = player_1
+        print(
+            f'  Jetzt ist {player_1["name"]} dran.\n  Tauschen Sie die Plätze und drücken Sie Enter wenn {player_2["name"]} nicht mehr schaut')
+    input()
+    menu.clear_screen()
+    return active_player
+
+
+def update_boards(active_player, other_player, player_input):
+    """Update the boards"""
+
+    # Convert player input into two int x and y to check the boards at specific place (case with number 9 or lower)
+    if len(player_input) == 2:
+        y = ord(player_input[0]) - 65
+        x = int(player_input[1]) - 1
+
+    # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
+    elif len(player_input) == 3:
+        y = ord(player_input[0]) - 65
+        x = int(player_input[1:3]) - 1
+
+    # Check opponent Board and update the boards accordingly
+    if other_player["board"][y][x] == "0":
+        active_player["guesses"][y][x] = "WG"
+        other_player["board"][y][x] = "WG"
+        # Show input result on the board and display Random Confirmation Message out of the predefine list
+        drawing_utils.draw_boards(active_player)
+        print("\n  " + random.choice(miss_phrases))
+        input("  Press Enter to Continue")
+
+    # Check opponent Board and update the boards accordingly
+    else:
+        last_target = other_player["board"][y][x]
+        if last_target == "Pa":
+            last_target_name = "Patrouillenboot"
+        elif last_target == "Su":
+            last_target_name = "U-Boot"
+        elif last_target == "De":
+            last_target_name = "Zerstörer"
+        elif last_target == "Ba":
+            last_target_name = "Schlachtschiff"
+        elif last_target == "Ca":
+            last_target_name = "Flugzeugträger"
+
+        active_player["guesses"][y][x] = "CG"
+        other_player["board"][y][x] += "_Hit"
+        # Show input result on the board and display Random Confirmation Message out of the predefine list
+
+        if any(last_target in row for row in other_player["board"]):
+            drawing_utils.draw_boards(active_player)
+            print("\n  " + random.choice(hit_phrases), end=". ")
+            # print(f"Sie haben das gegnerische {last_target_name} getroffen!")    # Alternative if Ship typ is to be named
+            print(f"Sie haben ein gegnerisches Schiffe getroffen!")
+        else:
+            other_player["ships_left"] -= 1
+            active_player["enemy_ships_left"] -= 1
+            drawing_utils.draw_boards(active_player)
+            print("\n  " + random.choice(hit_phrases), end=". ")
+            print(f"Sie haben das gegnerische {last_target_name} versenkt!")
+
+        input("  Press Enter to Continue")
+
+    return [active_player, other_player]
+
+
+# Prüft ob der Spieler gewonnen hat
+def check_if_won(player_1, player_2):
+    """ Function Checks if one player is out of Ships"""
+    if player_1["ships_left"] == 0 or player_2["ships_left"] == 0:
+        return True
+    else:
+        return False
