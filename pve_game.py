@@ -3,7 +3,7 @@ import menu
 import game_functions
 
 
-def launch(player_1, player_2):
+def launch(player_1, player_2, settings_values, language):
     menu.clear_screen()
     print("Mensch gegen Maschine!\n")
     player_1["name"] = str(input("Wie wollen Sie heiße: "))

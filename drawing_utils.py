@@ -104,8 +104,8 @@ def boards_to_blueprint(player, board_spacing):
                         blueprint[y][x] = "███"
 
             if y % 2 == 1 and (2 < y < blueprint_height - 1) and x % 2 == 1 and (
-                    (x > 2 and x < (len(player["board"]) * 2 + 3)) or (
-                    x > (len(player["board"]) * 2 + 5 + board_spacing) and y > 1 and x < blueprint_width - 1)):
+                    (2 < x < (len(player["board"]) * 2 + 3)) or (
+                    (len(player["board"]) * 2 + 5 + board_spacing) < x < blueprint_width - 1 and y > 1)):
 
                 if blueprint[y][x - 1][0:3] == blueprint[y][x + 1][0:3] and blueprint[y][x - 1] != "0" and blueprint[y][
                     x - 1] != "WG" and blueprint[y][x - 1] != "CG":
@@ -129,11 +129,11 @@ def boards_to_blueprint(player, board_spacing):
     return blueprint
 
 
-def draw_boards(player):
+def draw_boards(player, language):
     # Titels of the boards
-    header_1 = "Ihr Spielfeld"
-    header_2 = "Das Spielfeld des Gegners"
-    sub_header = "Anzahl an lebenden Schiffen: "
+    header_1 = language['your_board']
+    header_2 = language['your_enemys_board']
+    sub_header = language['how_many_ships_left']
 
     # Spacing between the two boards depended on titel length
     board_spacing = 5  # Has to be an odd number
@@ -146,7 +146,7 @@ def draw_boards(player):
 
     # Print the Titels and Sub-headers
     menu.clear_screen()
-    print(f'   {player["name"]} ist dran:')
+    print(f'   {player["name"]} {language["is_playing"]}:')
     print(f"\n        {header_1}{header_1_spacing}{final_spacing}       {header_2}")
     print(
         f"        {sub_header}{player['ships_left']}{sub_header_spacing}{final_spacing}       {sub_header}{player['enemy_ships_left']}\n")
