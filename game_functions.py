@@ -171,19 +171,24 @@ def ship_placement(player, possible_input, ship_list, language):
 
                 # If available space list is not empty ask for placement of the back of the ship
                 else:
-                    # List for printing
-                    placement_options = available_spaces[0]
+                    # Create a list for printing out
+                    placement_options_list = available_spaces[0]
                     for placement in range(1, len(available_spaces)):
-                        placement_options = placement_options + ", " + available_spaces[placement]
+                        placement_options_list = placement_options_list + ", " + available_spaces[placement]
 
+                    # Ask for the placement of the back of the ship
                     drawing_utils.draw_boards(player, language)
                     input_ship_back = str(input(
-                        f"\n\n  {language['the_front_is_on']} {input_ship_front}. {language['where_to_put_the_back__your_choices']} {placement_options} : ")).upper()
+                        f"\n\n  {language['the_front_is_on']} {input_ship_front}."
+                        f" {language['where_to_put_the_back__your_choices']} {placement_options_list} : ")).upper()
 
-                    if input_ship_back in placement_options:
+                    # If the player input is in the list of available space, the boards can be updated
+                    if input_ship_back in placement_options_list:
                         player = place_ship_down(player, ship, input_ship_front, input_ship_back)
                         drawing_utils.draw_boards(player, language)
                         print("\n")
+
+                    # Else throw error message, go back and ask again
                     else:
                         drawing_utils.draw_boards(player, language)
                         print(f"\n  {language['invalid_input']}")
@@ -196,6 +201,7 @@ def ship_placement(player, possible_input, ship_list, language):
                 print(f"\n  {language['invalid_input']}")
                 continue
 
+    # Show the end position of all ships before continuing
     drawing_utils.draw_boards(player, language)
     print("\n")
     input(f"  {language['press_enter_to_continue']}")
@@ -207,11 +213,14 @@ def random_ship_placement(player, possible_input, ship_list, language):
     for ship in ship_list:
         while True:
             try:
+                # Choose a random place on the board and check if enough space is available
                 input_ship_front = random.choice(possible_input)
                 available_spaces = check_space(input_ship_front, ship["size"], player)
+                # If not restart the loop
                 if available_spaces == []:
                     continue
 
+                # If space is available choose randomly one of the possible positions of the list
                 else:
                     input_ship_back = random.choice(available_spaces)
                     if input_ship_back in available_spaces:
@@ -224,6 +233,7 @@ def random_ship_placement(player, possible_input, ship_list, language):
                 print(f"\n  {language['invalid_input']}")
                 continue
 
+    # Show end result before continuing
     drawing_utils.draw_boards(player, language)
     print("\n")
     input(f"  {language['press_enter_to_continue']}")
@@ -232,6 +242,7 @@ def random_ship_placement(player, possible_input, ship_list, language):
 
 def check_space(player_input, ship_size, player):
     """checks if the chosen field would allow the ship to be placed"""
+    # Start with an empty list for the available space
     available_placement = []
 
     # Convert player input into two int x and y to check the boards at specific place (case with number 9 or lower)
@@ -244,24 +255,28 @@ def check_space(player_input, ship_size, player):
         y = ord(player_input[0]) - 65
         x = int(player_input[1:3]) - 1
 
+    # Check if starting space is empty, if not return the empty list for available spaces
     if player['board'][y][x] != "0":
         return available_placement
 
     check = False
     # Check Above
     for i in range(1, ship_size):
+        # It goes through all spaces above until it reaches the size of the ship, or finds a field that isn't empty
         if y + 1 - i != 0 and player['board'][y - i][x] == "0":
             check = True
 
         else:
+            # If it finds a field that isn't empty, it stops the loop and give false as a result for the check
             check = False
             break
 
+    # If the the check went through successfully it adds the field above to the available list
     if check is True:
         acceptable_field = chr(y + 65 - ship_size + 1) + str(x + 1)
         available_placement.append(acceptable_field)
 
-    # Check below
+    # Check below. Same as above
     check = False
     for i in range(1, ship_size):
         if y - 1 + i != len(player['board']) - 1 and player['board'][y + i][x] == "0":
@@ -275,7 +290,7 @@ def check_space(player_input, ship_size, player):
         acceptable_field = chr(y + 65 + ship_size - 1) + str(x + 1)
         available_placement.append(acceptable_field)
 
-    # Check left
+    # Check left. Same as above
     check = False
     for i in range(1, ship_size):
         if x + 1 - i != 0 and player['board'][y][x - i] == "0":
@@ -289,7 +304,7 @@ def check_space(player_input, ship_size, player):
         acceptable_field = chr(y + 65) + str(x + 1 - ship_size + 1)
         available_placement.append(acceptable_field)
 
-    # Check Right
+    # Check Right. Same as above
     check = False
     for i in range(1, ship_size):
         if x - 1 + i != len(player['board']) - 1 and player['board'][y][x + i] == "0":
@@ -349,7 +364,6 @@ def place_ship_down(player, ship, input_ship_front, input_ship_back):
     return player
 
 
-# Player input to attack
 def ask_input_from(player, possible_input, language):
     """Ask for player input and checks against list of possible inputs and already tried"""
     drawing_utils.draw_boards(player, language)
@@ -419,8 +433,9 @@ def update_boards(active_player, other_player, player_input, language):
         print("\n  " + random.choice(language['miss_phrases']))
         input("  Press Enter to Continue")
 
-    # Check opponent Board and update the boards accordingly
+    # If it hit, gets the name of the target, checks if the ship was destroyed and update the boards accordingly
     else:
+        # Get the symbol of the last target to know the name of the ship
         last_target = other_player['board'][y][x]
         if "Pa" in last_target:
             last_target_name = language['patrol_boat']
@@ -433,14 +448,17 @@ def update_boards(active_player, other_player, player_input, language):
         elif "Ca" in last_target:
             last_target_name = language['carrier']
 
+        # Adds the field as a correct guess to the active player and append _hit to the field on the opponents board
         active_player['guesses'][y][x] = "CG"
         other_player['board'][y][x] += "_Hit"
-        # Show input result on the board and display Random Confirmation Message out of the predefine list
 
+        # Show input result on the board and display Random Confirmation Message out of the predefine list
+        #Also check if any part of the ship is still alive
         if any(last_target in row for row in other_player['board']):
             drawing_utils.draw_boards(active_player, language)
             print("\n  " + random.choice(language['hit_phrases']), end=". ")
             print(f"  {language['you_ve_hit_an_enemy']}")
+        # If no part of the ship is left it reduces the numbre of ship of the enemy by one
         else:
             other_player['ships_left'] -= 1
             active_player['enemy_ships_left'] -= 1
