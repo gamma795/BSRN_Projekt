@@ -7,9 +7,9 @@ import menu
 # Settings defaults values
 # could import statistic from existing file instead if we implement this feature
 language = languages.deutsch
-settings_values = {"board_size": 10, "number_of_ships": 5}
-player_1 = {"name": "Player 1", "score": 0}
-player_2 = {"name": "Player 2", "score": 0}
+settings_values = {'board_size': 10, 'number_of_ships': 5}
+player_1 = {'name': "Player 1", 'score': 0}
+player_2 = {'name': "Player 2", 'score': 0}
 
 # Start settings_menu
 menu.clear_screen()
@@ -19,7 +19,7 @@ print("\n")
 # Locked in this loop until quit option is select and "break;" or "exit()" is reached
 while True:
     try:
-        main_menu_input = int(input(f'  {language["your_choice"]}: '))
+        main_menu_input = int(input(f"  {language['your_choice']}: "))
 
         # Opening Game typ settings_menu and choosing between "PvP", "PvE", and "Go back"
         if main_menu_input == 1:

@@ -2,10 +2,6 @@ import random
 import drawing_utils
 import menu
 
-# List of phrases in case of hit or miss
-miss_phrases = ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen", "Du Dödel. Voll verfehlt"]
-hit_phrases = ["Volltreffer", "Hit", "Yippee-ki-yay M*****F*****"]
-
 
 def setup_new_board(board_size):
     """Sets up a new board matrix filled with 0s"""
@@ -16,59 +12,62 @@ def setup_new_board(board_size):
 def set_new_player(board_size, language, other_player_name=" "):
     """Creates a new Player with empty board and scores and asks for a name"""
     player = {}
+    # Prevent completely empty name for legibility
+    forbidden_names = ["", " ", "   ", "    ", "     ", "      ", "       ", "        ", "         ",
+                       "          ", "           ", "            "]
 
     # If there is no named player yet, just asks for new name
     if other_player_name == " ":
         while True:
-            player["name"] = str(input(f"  {language['name_first_player']}: "))
-            if player["name"] not in ["", " ", "   ", "    ", "     ", "      ", "       ", "        ", "         ",
-                                      "          ", "           ", "            "] and len(player["name"]) < 13:
+            player['name'] = str(input(f"  {language['name_first_player']}: "))
+            if player['name'] not in forbidden_names and len(player['name']) < 13:
                 break
             else:
                 menu.clear_screen()
                 print(f"  {language['name_player_error']}")
                 continue
 
-    # Else if a named player already exists, asks for new name and compares to other players name. Only leaves input loop when the two names are different
+    # Else if a named player already exists, asks for new name and compares to other players name.
+    # Only leaves input loop when the two names are different
     else:
         menu.clear_screen()
         while True:
-            player["name"] = str(input(f"  {language['name_second_player']}: "))
+            player['name'] = str(input(f"  {language['name_second_player']}: "))
 
-            if player["name"] == other_player_name:
+            if player['name'] == other_player_name:
                 menu.clear_screen()
                 print(f"  {language['name_is_taken']}.")
 
-            elif player["name"] not in ["", " ", "   ", "    ", "     ", "      ", "       ", "        ", "         ",
-                                        "          ", "           ", "            "] and len(player["name"]) < 13:
+            elif player['name'] not in forbidden_names and len(player['name']) < 13:
                 break
 
             else:
                 menu.clear_screen()
                 print(f"  {language['name_player_error']}")
 
-    # Set up a new Empty personnal board, new guesses board and empty list of tried fields
-    player["board"] = setup_new_board(board_size)
-    player["guesses"] = setup_new_board(board_size)
-    player["already_tried"] = []
+    # Set up a new empty personal board, new guesses board and empty list of tried fields
+    player['board'] = setup_new_board(board_size)
+    player['guesses'] = setup_new_board(board_size)
+    player['already_tried'] = []
 
     return player
 
 
-# Gibt zurück wie viele Schiffe von jeder Größe (als dict)
 def set_ship_distribution(number_of_ships, language):
-    patrol_boat1 = {"name": language["patrol_boat"], "size": 2, "symbol": "Pa1"}  # 2 Felder groß
-    patrol_boat2 = {"name": language["patrol_boat"], "size": 2, "symbol": "Pa2"}
-    patrol_boat3 = {"name": language["patrol_boat"], "size": 2, "symbol": "Pa3"}
-    patrol_boat4 = {"name": language["patrol_boat"], "size": 2, "symbol": "Pa4"}
-    submarine1 = {"name": language["submarine"], "size": 3, "symbol": "Su1"}  # 3 Felder groß
-    submarine2 = {"name": language["submarine"], "size": 3, "symbol": "Su2"}
-    destroyer = {"name": language["destroyer"], "size": 3, "symbol": "Des"}  # 3 Felder groß
-    battleship1 = {"name": language["battleship"], "size": 4, "symbol": "Ba1"}  # 4 Felder groß
-    battleship2 = {"name": language["battleship"], "size": 4, "symbol": "Ba2"}
-    carrier = {"name": language["carrier"], "size": 5, "symbol": "Car"}  # 5 Felder groß
+    """Sets the the amount of each ship typ"""
+    # List of all possible ships, their size, name and symbol of the board
+    patrol_boat1 = {'name': language['patrol_boat'], 'size': 2, 'symbol': "Pa1"}
+    patrol_boat2 = {'name': language['patrol_boat'], 'size': 2, 'symbol': "Pa2"}
+    patrol_boat3 = {'name': language['patrol_boat'], 'size': 2, 'symbol': "Pa3"}
+    patrol_boat4 = {'name': language['patrol_boat'], 'size': 2, 'symbol': "Pa4"}
+    submarine1 = {'name': language['submarine'], 'size': 3, 'symbol': "Su1"}
+    submarine2 = {'name': language['submarine'], 'size': 3, 'symbol': "Su2"}
+    destroyer = {'name': language['destroyer'], 'size': 3, 'symbol': "Des"}
+    battleship1 = {'name': language['battleship'], 'size': 4, 'symbol': "Ba1"}
+    battleship2 = {'name': language['battleship'], 'size': 4, 'symbol': "Ba2"}
+    carrier = {'name': language['carrier'], 'size': 5, 'symbol': "Car"}
 
-    # Verteilung der Schiffe
+    # Create a list of the ships based on how many there are
 
     if number_of_ships == 3:
         ship_list = [battleship1, submarine1, patrol_boat1]
@@ -103,8 +102,9 @@ def choose_ship_placement_methode(player, possible_input, ship_list, language):
     """Choice between randomly distributing the ships or deciding yourself"""
     menu.clear_screen()
     print(
-        f'  {player["name"]} {language["is_playing"]}.\n\n')
-    print(f"   1. {language['place_ships_yourself']}\n   2. {language['place_ships_randomly']}\n\n")
+        f"  {player['name']} {language['is_playing']}\n\n\n"
+        f"   1. {language['place_ships_yourself']}\n"
+        f"   2. {language['place_ships_randomly']}\n\n")
 
     while True:
         try:
@@ -113,7 +113,6 @@ def choose_ship_placement_methode(player, possible_input, ship_list, language):
             # Player chooses ship placement
             if player_input == 1:
                 menu.clear_screen()
-
                 player = ship_placement(player, possible_input, ship_list, language)
                 print("\n")
                 break
@@ -128,17 +127,17 @@ def choose_ship_placement_methode(player, possible_input, ship_list, language):
             # Catch wrong input
             else:
                 menu.clear_screen()
-                print(
-                    f'  {player["name"]} {language["is_playing"]}.\n\n')
-                print(f"   1. {language['place_ships_yourself']}\n   2. {language['place_ships_randomly']}\n\n")
+                print(f"  {player['name']} {language['is_playing']}\n\n\n"
+                      f"   1. {language['place_ships_yourself']}\n"
+                      f"   2. {language['place_ships_randomly']}")
                 menu.invalid_input(language)
 
             # Catch wrong value input
         except ValueError:
             menu.clear_screen()
-            print(
-                f'  {player["name"]} {language["is_playing"]}.\n\n')
-            print(f"   1. {language['place_ships_yourself']}\n   2. {language['place_ships_randomly']}\n\n")
+            print(f"  {player['name']} {language['is_playing']}\n\n\n"
+                  f"   1. {language['place_ships_yourself']}\n"
+                  f"   2. {language['place_ships_randomly']}")
             menu.invalid_input(language)
             continue
     return player
@@ -152,21 +151,27 @@ def ship_placement(player, possible_input, ship_list, language):
     for ship in ship_list:
         while True:
             try:
+                # Ask where the front of the ship should be placed
                 input_ship_front = str(
-                    input(f"  {language['your']} {ship['name']} {language['is']} {ship['size']} {language['field_big_where_to_start']}? ")).upper()
+                    input(
+                        f"  {language['your']} {ship['name']} {language['is']} {ship['size']} {language['field_big_where_to_start']}? ")).upper()
 
+                # Check if field exist
                 if input_ship_front not in possible_input:
                     drawing_utils.draw_boards(player, language)
                     print(f"\n  {language['invalid_input']}")
                     continue
 
-                available_spaces = check_space(input_ship_front, ship["size"], player)
+                # If the returned available space list is empty ask again
+                available_spaces = check_space(input_ship_front, ship['size'], player)
                 if available_spaces == []:
                     drawing_utils.draw_boards(player, language)
                     print(f"\n  {language['not_enough_space_for']} {ship['name']}")
                     continue
 
+                # If available space list is not empty ask for placement of the back of the ship
                 else:
+                    # List for printing
                     placement_options = available_spaces[0]
                     for placement in range(1, len(available_spaces)):
                         placement_options = placement_options + ", " + available_spaces[placement]
@@ -235,17 +240,17 @@ def check_space(player_input, ship_size, player):
         x = int(player_input[1]) - 1
 
     # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
-    elif len(player_input) == 3:
+    else:
         y = ord(player_input[0]) - 65
         x = int(player_input[1:3]) - 1
 
-    if player["board"][y][x] != "0":
+    if player['board'][y][x] != "0":
         return available_placement
 
     check = False
     # Check Above
     for i in range(1, ship_size):
-        if y + 1 - i != 0 and player["board"][y - i][x] == "0":
+        if y + 1 - i != 0 and player['board'][y - i][x] == "0":
             check = True
 
         else:
@@ -259,7 +264,7 @@ def check_space(player_input, ship_size, player):
     # Check below
     check = False
     for i in range(1, ship_size):
-        if y - 1 + i != len(player["board"]) - 1 and player["board"][y + i][x] == "0":
+        if y - 1 + i != len(player['board']) - 1 and player['board'][y + i][x] == "0":
             check = True
 
         else:
@@ -273,7 +278,7 @@ def check_space(player_input, ship_size, player):
     # Check left
     check = False
     for i in range(1, ship_size):
-        if x + 1 - i != 0 and player["board"][y][x - i] == "0":
+        if x + 1 - i != 0 and player['board'][y][x - i] == "0":
             check = True
 
         else:
@@ -287,7 +292,7 @@ def check_space(player_input, ship_size, player):
     # Check Right
     check = False
     for i in range(1, ship_size):
-        if x - 1 + i != len(player["board"]) - 1 and player["board"][y][x + i] == "0":
+        if x - 1 + i != len(player['board']) - 1 and player['board'][y][x + i] == "0":
             check = True
 
         else:
@@ -308,7 +313,7 @@ def place_ship_down(player, ship, input_ship_front, input_ship_back):
         front_x = int(input_ship_front[1]) - 1
 
     # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
-    elif len(input_ship_front) == 3:
+    else:
         front_y = ord(input_ship_front[0]) - 65
         front_x = int(input_ship_front[1:3]) - 1
 
@@ -317,29 +322,29 @@ def place_ship_down(player, ship, input_ship_front, input_ship_back):
         back_x = int(input_ship_back[1]) - 1
 
     # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
-    elif len(input_ship_back) == 3:
+    else:
         back_y = ord(input_ship_back[0]) - 65
         back_x = int(input_ship_back[1:3]) - 1
 
-    # Checks if the ship is positioned horizontaly and places the ship down
+    # Checks if the ship is positioned horizontally and places the ship down
     if front_y == back_y:
         if front_x > back_x:
             for i in range(front_x - back_x + 1):
-                player["board"][front_y][back_x + i] = ship["symbol"]
+                player['board'][front_y][back_x + i] = ship['symbol']
 
         elif front_x < back_x:
             for i in range(back_x - front_x + 1):
-                player["board"][front_y][front_x + i] = ship["symbol"]
+                player['board'][front_y][front_x + i] = ship['symbol']
 
-    # Checks if the ship is positioned verticaly and places the ship down
+    # Checks if the ship is positioned vertically and places the ship down
     elif front_y != back_y:
         if front_y > back_y:
             for i in range(front_y - back_y + 1):
-                player["board"][back_y + i][back_x] = ship["symbol"]
+                player['board'][back_y + i][back_x] = ship['symbol']
 
         elif front_y < back_y:
             for i in range(back_y - front_y + 1):
-                player["board"][front_y + i][back_x] = ship["symbol"]
+                player['board'][front_y + i][back_x] = ship['symbol']
 
     return player
 
@@ -351,16 +356,16 @@ def ask_input_from(player, possible_input, language):
     print("\n")
     while True:
         try:
-            player_input = str(input("  {language['what_is_your_next_play']}: ")).upper()
+            player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
             if player_input == "EXIT":
                 break
             if player_input in possible_input:
-                if player_input in player["already_tried"]:
+                if player_input in player['already_tried']:
                     drawing_utils.draw_boards(player, language)
                     print(f"\n  {language['you_ve_already_shot_there']}.")
                     continue
                 else:
-                    player["already_tried"].append(player_input)
+                    player['already_tried'].append(player_input)
                     break
             else:
                 drawing_utils.draw_boards(player, language)
@@ -375,16 +380,18 @@ def ask_input_from(player, possible_input, language):
 
 
 def switch_player(active_player, player_1, player_2, language):
-    """Switches active player and waits for confirmation that only active player is lookig"""
+    """Switches active player and waits for confirmation that only active player is looking"""
     menu.clear_screen()
     if active_player == player_1:
         active_player = player_2
         print(
-            f'  {player_2["name"]} {language["is_playing"]}.\n  {language["switch_places_and_press_enter_when"]} {player_1["name"]} {language["isnt_looking"]}')
+            f"  {player_2['name']} {language['is_playing']}.\n"
+            f"  {language['switch_places_and_press_enter_when']} {player_1['name']} {language['is_not_looking']}")
     else:
         active_player = player_1
         print(
-            f'  {player_1["name"]} {language["is_playing"]}.\n  {language["switch_places_and_press_enter_when"]} {player_2["name"]} {language["isnt_looking"]}')
+            f"  {player_1['name']} {language['is_playing']}.\n"
+            f"  {language['switch_places_and_press_enter_when']} {player_2['name']} {language['is_not_looking']}")
     input()
     menu.clear_screen()
     return active_player
@@ -399,47 +406,46 @@ def update_boards(active_player, other_player, player_input, language):
         x = int(player_input[1]) - 1
 
     # Convert player input into two int x and y to check the boards at specific place (case with number 10 or higher)
-    elif len(player_input) == 3:
+    else:
         y = ord(player_input[0]) - 65
         x = int(player_input[1:3]) - 1
 
     # Check opponent Board and update the boards accordingly
-    if other_player["board"][y][x] == "0":
-        active_player["guesses"][y][x] = "WG"
-        other_player["board"][y][x] = "WG"
+    if other_player['board'][y][x] == "0":
+        active_player['guesses'][y][x] = "WG"
+        other_player['board'][y][x] = "WG"
         # Show input result on the board and display Random Confirmation Message out of the predefine list
         drawing_utils.draw_boards(active_player, language)
-        print("\n  " + random.choice(miss_phrases))
+        print("\n  " + random.choice(language['miss_phrases']))
         input("  Press Enter to Continue")
 
     # Check opponent Board and update the boards accordingly
     else:
-        last_target = other_player["board"][y][x]
+        last_target = other_player['board'][y][x]
         if "Pa" in last_target:
-            last_target_name = language["patrol_boat"]
+            last_target_name = language['patrol_boat']
         elif "Su" in last_target:
-            last_target_name = language["submarine"]
+            last_target_name = language['submarine']
         elif "De" in last_target:
-            last_target_name = language["destroyer"]
+            last_target_name = language['destroyer']
         elif "Ba" in last_target:
-            last_target_name = language["battleship"]
+            last_target_name = language['battleship']
         elif "Ca" in last_target:
-            last_target_name = language["carrier"]
+            last_target_name = language['carrier']
 
-        active_player["guesses"][y][x] = "CG"
-        other_player["board"][y][x] += "_Hit"
+        active_player['guesses'][y][x] = "CG"
+        other_player['board'][y][x] += "_Hit"
         # Show input result on the board and display Random Confirmation Message out of the predefine list
 
-        if any(last_target in row for row in other_player["board"]):
+        if any(last_target in row for row in other_player['board']):
             drawing_utils.draw_boards(active_player, language)
-            print("\n  " + random.choice(hit_phrases), end=". ")
-            # print(f"Sie haben das gegnerische {last_target_name} getroffen!")    # Alternative if Ship typ is to be named
+            print("\n  " + random.choice(language['hit_phrases']), end=". ")
             print(f"  {language['you_ve_hit_an_enemy']}")
         else:
-            other_player["ships_left"] -= 1
-            active_player["enemy_ships_left"] -= 1
+            other_player['ships_left'] -= 1
+            active_player['enemy_ships_left'] -= 1
             drawing_utils.draw_boards(active_player, language)
-            print("\n  " + random.choice(hit_phrases), end=". ")
+            print("\n  " + random.choice(language['hit_phrases']), end=". ")
             print(f"  {language['you_ve_destroyed']} {last_target_name} {language['sunk']}!")
 
         input(f"  {language['press_enter_to_continue']}")
@@ -447,10 +453,9 @@ def update_boards(active_player, other_player, player_input, language):
     return [active_player, other_player]
 
 
-# Prüft ob der Spieler gewonnen hat
 def check_if_won(player_1, player_2):
     """ Function Checks if one player is out of Ships"""
-    if player_1["ships_left"] == 0 or player_2["ships_left"] == 0:
+    if player_1['ships_left'] == 0 or player_2['ships_left'] == 0:
         return True
     else:
         return False
