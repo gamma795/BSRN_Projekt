@@ -202,7 +202,7 @@ francais = {
     'you_ve_destroyed': "Vous avez coulez le ",
     'sunk': "ennemie",
     'miss_phrases': ["A coté", "Un tir dans l'eau", "Raté"],
-    'hit_phrases': ["EN plein dans le mille", "Touché", "Yippee-ki-yay M*****F*****"],
+    'hit_phrases': ["En plein dans le mille", "Touché", "Yippee-ki-yay M*****F*****"],
 
     # Ship names
     'patrol_boat': "torpilleur",
