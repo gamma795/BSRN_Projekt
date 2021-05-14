@@ -393,6 +393,34 @@ def ask_input_from(player, possible_input, language):
     return player_input
 
 
+import _thread
+
+flag = False
+
+
+def countdown():
+    when_to_stop = 15
+    while when_to_stop > 0:
+        m, s = divmod(when_to_stop, 60)
+        time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
+        print("\rDeine Zeit: " + time_left, end="")
+
+        time.sleep(1)
+        when_to_stop -= 1
+
+        if when_to_stop == 0:
+            global flag
+            flag = True
+
+
+def test(board_size):
+    _thread.start_new_thread(countdown(), 1)
+    _thread.start_new_thread(ask_input_from(), 1)
+
+    if flag == True:
+        return random_ship_attac(board_size)
+
+
 def switch_player(active_player, player_1, player_2, language):
     """Switches active player and waits for confirmation that only active player is looking"""
     menu.clear_screen()
@@ -453,7 +481,7 @@ def update_boards(active_player, other_player, player_input, language):
         other_player['board'][y][x] += "_Hit"
 
         # Show input result on the board and display Random Confirmation Message out of the predefine list
-        #Also check if any part of the ship is still alive
+        # Also check if any part of the ship is still alive
         if any(last_target in row for row in other_player['board']):
             drawing_utils.draw_boards(active_player, language)
             print("\n  " + random.choice(language['hit_phrases']), end=". ")
