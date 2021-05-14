@@ -392,7 +392,7 @@ def ask_input_from(player, possible_input, language):
             continue
     return player_input
 
-
+# abc
 import _thread
 
 flag = False
