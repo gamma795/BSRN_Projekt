@@ -46,6 +46,7 @@ def set_new_player(board_size, language, other_player_name=" "):
                 print(f"  {language['name_player_error']}")
 
     # Set up a new empty personal board, new guesses board and empty list of tried fields
+
     player['board'] = setup_new_board(board_size)
     player['guesses'] = setup_new_board(board_size)
     player['already_tried'] = []
@@ -101,45 +102,61 @@ def set_ship_distribution(number_of_ships, language):
 def choose_ship_placement_methode(player, possible_input, ship_list, language):
     """Choice between randomly distributing the ships or deciding yourself"""
     menu.clear_screen()
+
+    print("\n")
+
     print(
         f"  {player['name']} {language['is_playing']}\n\n\n"
         f"   1. {language['place_ships_yourself']}\n"
         f"   2. {language['place_ships_randomly']}\n\n")
 
-    while True:
-        try:
-            player_input = int(input(f"  {language['your_choice']}: "))
+    flag = 1
+    while flag == 1:
 
-            # Player chooses ship placement
-            if player_input == 1:
-                menu.clear_screen()
-                player = ship_placement(player, possible_input, ship_list, language)
-                print("\n")
-                break
+        if 'Bot' in player['name']:
+            print("Bot hat seine Schiffe gesetzt")
+            menu.clear_screen()
+            player = random_ship_placement(player, possible_input, ship_list, language)
+            break
 
-            # Random placement of ships
-            elif player_input == 2:
-                menu.clear_screen()
-                player = random_ship_placement(player, possible_input, ship_list, language)
-                print("\n")
-                break
+        while True:
+            try:
+                player_input = int(input(f"  {language['your_choice']}: "))
 
-            # Catch wrong input
-            else:
+                # Player chooses ship placement
+                if player_input == 1:
+                    menu.clear_screen()
+                    player = ship_placement(player, possible_input, ship_list, language)
+                    print("\n")
+                    flag += 1
+                    break
+
+                # Random placement of ships
+                elif player_input == 2:
+                    menu.clear_screen()
+                    player = random_ship_placement(player, possible_input, ship_list, language)
+                    print("\n")
+                    flag += 1
+                    break
+
+                # Catch wrong input
+                else:
+                    menu.clear_screen()
+                    print(f"  {player['name']} {language['is_playing']}\n\n\n"
+                          f"   1. {language['place_ships_yourself']}\n"
+                          f"   2. {language['place_ships_randomly']}")
+                    flag += 1
+                    menu.invalid_input(language)
+
+                # Catch wrong value input
+            except ValueError:
                 menu.clear_screen()
                 print(f"  {player['name']} {language['is_playing']}\n\n\n"
                       f"   1. {language['place_ships_yourself']}\n"
                       f"   2. {language['place_ships_randomly']}")
                 menu.invalid_input(language)
-
-            # Catch wrong value input
-        except ValueError:
-            menu.clear_screen()
-            print(f"  {player['name']} {language['is_playing']}\n\n\n"
-                  f"   1. {language['place_ships_yourself']}\n"
-                  f"   2. {language['place_ships_randomly']}")
-            menu.invalid_input(language)
-            continue
+                flag += 1
+                continue
     return player
 
 
@@ -234,9 +251,10 @@ def random_ship_placement(player, possible_input, ship_list, language):
                 continue
 
     # Show end result before continuing
-    drawing_utils.draw_boards(player, language)
-    print("\n")
-    input(f"  {language['press_enter_to_continue']}")
+    if 'Bot' not in player['name']:
+        drawing_utils.draw_boards(player, language)
+        print("\n")
+        input(f"  {language['press_enter_to_continue']}")
     return player
 
 
@@ -369,8 +387,13 @@ def ask_input_from(player, possible_input, language):
     drawing_utils.draw_boards(player, language)
     print("\n")
     while True:
+
         try:
-            player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
+            if 'Bot' in player['name']:
+                player_input = random_ship_attac(player['board_size'])
+            else:
+                player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
+
             if player_input == "EXIT":
                 break
             if player_input in possible_input:
@@ -390,7 +413,37 @@ def ask_input_from(player, possible_input, language):
             drawing_utils.draw_boards(player, language)
             print(f"\n  {language['invalid_input']}")
             continue
+
     return player_input
+
+
+# abc
+import _thread
+
+flag = False
+
+
+def countdown():
+    when_to_stop = 15
+    while when_to_stop > 0:
+        m, s = divmod(when_to_stop, 60)
+        time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
+        print("\rDeine Zeit: " + time_left, end="")
+
+        time.sleep(1)
+        when_to_stop -= 1
+
+        if when_to_stop == 0:
+            global flag
+            flag = True
+
+
+def test(board_size):
+    _thread.start_new_thread(countdown(), 1)
+    _thread.start_new_thread(ask_input_from(), 1)
+
+    if flag == True:
+        return random_ship_attac(board_size)
 
 
 def switch_player(active_player, player_1, player_2, language):
@@ -453,7 +506,7 @@ def update_boards(active_player, other_player, player_input, language):
         other_player['board'][y][x] += "_Hit"
 
         # Show input result on the board and display Random Confirmation Message out of the predefine list
-        #Also check if any part of the ship is still alive
+        # Also check if any part of the ship is still alive
         if any(last_target in row for row in other_player['board']):
             drawing_utils.draw_boards(active_player, language)
             print("\n  " + random.choice(language['hit_phrases']), end=". ")
@@ -462,6 +515,7 @@ def update_boards(active_player, other_player, player_input, language):
         else:
             other_player['ships_left'] -= 1
             active_player['enemy_ships_left'] -= 1
+
             drawing_utils.draw_boards(active_player, language)
             print("\n  " + random.choice(language['hit_phrases']), end=". ")
             print(f"  {language['you_ve_destroyed']} {last_target_name} {language['sunk']}!")
@@ -477,3 +531,20 @@ def check_if_won(player_1, player_2):
         return True
     else:
         return False
+
+
+# Diese Funktion greift ein zufälliges Schiff an
+def random_ship_attac(max):
+    from random import randint
+    # max ist das äußere Ende des Spielfeldes z.B 10 * 10
+    # Zufällige int Werte
+    y = randint(1, max)
+    x = randint(1, max)
+
+    # Umwandeln von int zu einem Buchstaben für 'Y'
+    y = chr(y + 64)
+
+    # Output bestehend aus Buchstabe und Zahla
+    output = y + str(x)
+    print(output)
+    return output
