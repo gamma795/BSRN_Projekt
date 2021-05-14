@@ -127,6 +127,8 @@ english = {
     'you_ve_hit_an_enemy': "You've hit the enemy's ",
     'you_ve_destroyed': "You've destroyed the enemy's ",
     'sunk': "",
+    'miss_phrases': ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen", "Du Dödel. Voll verfehlt"],
+    'hit_phrases': ["Volltreffer", "Hit", "Yippee-ki-yay M*****F*****"],
 
     # Ship names
     'patrol_boat': "patrol boat",
