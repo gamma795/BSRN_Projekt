@@ -29,7 +29,7 @@ def close_if_time_pass(seconds):
     Threading function, after N seconds print something and exit program
     """
     time.sleep(seconds)
-    exit("\nDeine Zeit ist abgelaufen. Es wurde ein zufälliges Felb beschossen")
+    exit("\nDeine Zeit ist abgelaufen. Es wurde ein zufälliges Feld beschossen")
 
 
 def main():
