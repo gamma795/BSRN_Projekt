@@ -148,6 +148,7 @@ def draw_boards(player, language):
     blueprint = boards_to_blueprint(player, board_spacing)
 
     # Print the titles and Sub-headers
+
     menu.clear_screen()
     print(f"   {player['name']} {language['is_playing']}:\n"
           f"        {header_1}{header_1_spacing}{final_spacing}       {header_2}\n"
