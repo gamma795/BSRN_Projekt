@@ -8,6 +8,7 @@ def ask():
     Simple function where you ask for input, if he answers
     you print message and exit
     """
+    print("Deine Zeit: ")
     name = input("Gib ein Feld an, auf das geschossen werden soll: ")
     exit_message = "Du hast auf das Feld %s geschossen" % name
     exit(exit_message)
