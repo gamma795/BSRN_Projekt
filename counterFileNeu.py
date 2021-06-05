@@ -2,6 +2,9 @@ import threading
 import time
 import os
 
+global my_input
+global flag
+
 
 def ask():
     """
@@ -9,9 +12,19 @@ def ask():
     you print message and exit
     """
     print("Deine Zeit: ")
-    name = input("Gib ein Feld an, auf das geschossen werden soll: ")
-    exit_message = "Du hast auf das Feld %s geschossen" % name
-    exit(exit_message)
+
+    global my_input
+    global flag
+
+    my_input = input("Gib ein Feld an, auf das geschossen werden soll: ")
+    exit_message = "Du hast auf das Feld %s geschossen" % my_input
+    if len(my_input > 0):
+        flag = True
+    else:
+        False
+
+    # exit(exit_message)
+    return my_input
 
 
 def exit(msg):
@@ -29,7 +42,17 @@ def close_if_time_pass(seconds):
     Threading function, after N seconds print something and exit program
     """
     time.sleep(seconds)
-    exit("\nDeine Zeit ist abgelaufen. Es wurde ein zufälliges Feld beschossen")
+
+
+bol = flag
+if bol == False:
+    pass
+
+"""
+Threading function, after N seconds print something and exit program
+
+    time.sleep(seconds)
+    exit("\nDeine Zeit ist abgelaufen. Es wurde ein zufälliges Feld beschossen")"""
 
 
 def main():
@@ -41,5 +64,8 @@ def main():
     ask()
 
 
-if __name__ == "__main__":
-    main()
+def ret_value():
+    return my_input
+
+# if __name__ == "__main__":
+# main()
