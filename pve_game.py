@@ -47,7 +47,7 @@ def launch(player_1, player_2, settings_values, language):
     if active_player == player_1:
         # Wait for player 2 to not be looking at let player 1 place their ship
         print(f"  {player_1['name']} {language['is_playing']}.\n"
-              f"  {language['press_enter_when']} {player_2['name']} {language['is_not_looking']}: ")
+              )  # f"  {language['press_enter_when']} {player_2['name']} {language['is_not_looking']}: ")
         input()
         player_1 = game_functions.choose_ship_placement_methode(player_1, possible_input, ship_list, language)
         menu.clear_screen()
@@ -63,7 +63,7 @@ def launch(player_1, player_2, settings_values, language):
     elif active_player == player_2:
         # Wait for player 1 to not be looking at let player 2 place their ship
         print(f"  {player_2['name']} {language['is_playing']}.\n")
-        print(f"  {player_2['name']} hat seine Schiffe gesetzt.\n")
+        print(f"  {player_2['name']} hat  seine Schiffe gesetzt.\n")
         # f"  {language['press_enter_when']} {player_1['name']} {language['is_not_looking']}: ")
         input()
         player_2 = game_functions.choose_ship_placement_methode(player_2, possible_input, ship_list, language)
@@ -71,7 +71,7 @@ def launch(player_1, player_2, settings_values, language):
 
         # Switch to player 1, wait for player 2 to not be looking at let player 1 place their ship
         print(f"  {player_1['name']} {language['is_playing']}.\n"
-              f"  {language['switch_places_and_press_enter_when']} {player_2['name']} {language['is_not_looking']}: ")
+              f"  {language['switch_places_and_press_enter_when']}")  # {player_2['name']} {language['is_not_looking']}: ")
         input()
         player_1 = game_functions.choose_ship_placement_methode(player_1, possible_input, ship_list, language)
         other_player = player_1
