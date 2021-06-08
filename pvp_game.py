@@ -74,6 +74,7 @@ def launch(player_1, player_2, settings_values, language):
 
     while True:
         if active_player == player_1:
+
             # Ask for player input and check if input is possible
             player_input = game_functions.ask_input_from(player_1, possible_input,
                                                          language)
@@ -102,6 +103,7 @@ def launch(player_1, player_2, settings_values, language):
 
         else:
             # Ask for player input and check if input is possible
+
             player_input = game_functions.ask_input_from(player_2, possible_input,
                                                          language)
 

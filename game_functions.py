@@ -384,6 +384,7 @@ def place_ship_down(player, ship, input_ship_front, input_ship_back):
 
 
 def ask_input_from(player, possible_input, language):
+    flag = False
     """Ask for player input and checks against list of possible inputs and already tried"""
     drawing_utils.draw_boards(player, language)
     print("\n")
@@ -392,13 +393,10 @@ def ask_input_from(player, possible_input, language):
         try:
             if 'Bot' in player['name']:
                 player_input = random_ship_attac(player['board_size'])
-            elif 1 == 1:
-                player_input = counterFileNeu.main()
-                if player_input == "EMPTY":
-                    player_input = random_ship_attac(player['board_size'])
 
             else:
-                player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
+                player_input = counterFileNeu.main(len(player['board']))
+                flag = True
 
             if player_input == "EXIT":
                 break
