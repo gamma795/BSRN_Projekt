@@ -1,6 +1,7 @@
 import random
 import drawing_utils
 import menu
+import counterFileNeu
 
 
 def setup_new_board(board_size):
@@ -391,6 +392,11 @@ def ask_input_from(player, possible_input, language):
         try:
             if 'Bot' in player['name']:
                 player_input = random_ship_attac(player['board_size'])
+            elif 1 == 1:
+                player_input = counterFileNeu.main()
+                if player_input == "EMPTY":
+                    player_input = random_ship_attac(player['board_size'])
+
             else:
                 player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
 
@@ -415,35 +421,6 @@ def ask_input_from(player, possible_input, language):
             continue
 
     return player_input
-
-
-# abc
-import _thread
-
-flag = False
-
-
-def countdown():
-    when_to_stop = 15
-    while when_to_stop > 0:
-        m, s = divmod(when_to_stop, 60)
-        time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
-        print("\rDeine Zeit: " + time_left, end="")
-
-        time.sleep(1)
-        when_to_stop -= 1
-
-        if when_to_stop == 0:
-            global flag
-            flag = True
-
-
-def test(board_size):
-    _thread.start_new_thread(countdown(), 1)
-    _thread.start_new_thread(ask_input_from(), 1)
-
-    if flag == True:
-        return random_ship_attac(board_size)
 
 
 def switch_player(active_player, player_1, player_2, language):
