@@ -55,8 +55,8 @@ def close_if_time_pass(seconds):
     time.sleep(seconds)
     global flag, stopp_sign
     stopp_sign = True
-    if flag == False:
-        exit(
+
+    exit(
             "\nDeine Zeit ist abgelaufen. Es wurde ein zufälliges Felb beschossen\nDrück die Enter-Taste um fortzufahren")
 
 
@@ -97,6 +97,9 @@ def main(max):
 
     t.start()
     t2.start()
+    '''t.join()
+    t2.join()'''
+
 
     # ask for input
     global user_input
@@ -104,6 +107,10 @@ def main(max):
 
     if len(user_input) < 1:
         user_input = game_functions.random_ship_attac(max)
+    t.join(0.1)
+    t2.join(0.1)
+    t._stop()
+    t2._stop()
 
 
 
