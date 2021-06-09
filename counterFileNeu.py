@@ -70,8 +70,8 @@ def countdown():
     global start_sign
     when_to_stop = 15
     stopp_sign = False
-    print(when_to_stop)
-    while when_to_stop > 0 and start_sign == True:
+
+    while when_to_stop > 0 and start_sign == True and stopp_sign != True:
         m, s = divmod(when_to_stop, 60)
         time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
         print("\rDeine Zeit: " + time_left + " ||| Deine Eingabe: ", end="")
