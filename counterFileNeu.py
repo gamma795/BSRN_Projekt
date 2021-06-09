@@ -5,7 +5,7 @@ import os
 
 flag = False
 user_input = "EMPTY"
-stopp_sign = False
+stop_sign = False
 start_sign = False
 
 
@@ -16,7 +16,7 @@ def ask():
     """
 
     global flag
-    global stopp_sign
+    global stop_sign
 
     my_input = input().upper()
 
@@ -26,7 +26,7 @@ def ask():
     exit(exit_message)
 
     if my_input != "EMPTY":
-        stopp_sign = True
+        stop_sign = True
 
     return my_input
 
@@ -52,11 +52,11 @@ def close_if_time_pass(seconds):
     """
 
     time.sleep(seconds)
-    global flag, stopp_sign
-    stopp_sign = True
+    global flag, stop_sign
+    stop_sign = True
 
     exit(
-        "\nDeine Zeit ist abgelaufen. Es wurde ein zufälliges Felb beschossen\nDrück die Enter-Taste um fortzufahren")
+        "\n  Deine Zeit ist abgelaufen. Es wurde ein zufälliges Felb beschossen\n  Drück die Enter-Taste um fortzufahren")
 
 
 # counterfunktion die noch eingabaut werden muss
@@ -71,12 +71,15 @@ def countdown():
     when_to_stop = 15
     stopp_sign = False
 
-    while when_to_stop > 0 and start_sign == True and stopp_sign != True:
+    while when_to_stop > 0 and start_sign == True:#and stopp_sign != True:
         m, s = divmod(when_to_stop, 60)
         time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
-        print("\rDeine Zeit: " + time_left + " ||| Deine Eingabe: ", end="")
+        print("\r  Deine Zeit: " + time_left + " ||| Deine Eingabe: ", end="")
 
-        time.sleep(1)
+        if when_to_stop > 10:
+            time.sleep(2)
+        else:
+            time.sleep(.75)
         when_to_stop -= 1
 
         if when_to_stop == -1:
@@ -103,8 +106,6 @@ def main(max):
 
     t2.start()
     t.start()
-    '''t.join()
-    t2.join()'''
 
     # ask for input
     global user_input
@@ -112,14 +113,12 @@ def main(max):
 
     if len(user_input) < 1:
         user_input = game_functions.random_ship_attac(max)
-    # t.join(0.1)
-    # t2.join(0.1)
+
     print(t.is_alive())
     print(t2.is_alive())
-    # t._stop()
-    # t2._stop()
+
     start_sign = False
 
     return user_input
 
-# main()
+
