@@ -30,7 +30,8 @@ def show_settings_menu(language):
           f"   1: {language['change_board_size']}\n"
           f"   2: {language['change_ship_amount']}\n"
           f"   3: {language['change_language']}\n"
-          f"   4: {language['back']}")
+          f"   4: {language['change_bot_difficulty']}\n"
+          f"   5: {language['back']}")
 
 
 def settings_menu(settings_values, language):
@@ -92,8 +93,16 @@ def settings_menu(settings_values, language):
                 show_settings_menu(language)
                 print("\n")
 
-            # Go back to main settings_menu
+            # Change diff of pve game
             elif settings_menu_input == 4:
+                clear_screen()
+                settings_values['bot_difficulty'] = set_bot_difficulty(language)
+                clear_screen()
+                show_settings_menu(language)
+                print("\n")
+
+            # Go back to main settings_menu
+            elif settings_menu_input == 5:
                 clear_screen()
                 show_main_menu(language)
                 print("\n")
@@ -202,6 +211,36 @@ def set_number_of_ships(language):
             continue
 
     return ships_num
+
+def set_bot_difficulty(language):
+    while True:
+        try:
+            clear_screen()
+            print(f"  {language['choose_bot_level']}\n\n")
+            print(f"   1: {language['easy']}\n"
+                  f"   2: {language['normal']}\n"
+                  f"   3. {language['hard']}\n"
+                  f"   4: {language['back']}\n\n")
+            player_input = int(input(f"  {language['your_choice']}: "))
+
+            # Change language to the one the user chose
+            if player_input == 1:
+                return "easy"
+            elif player_input == 2:
+                return "normal"
+            elif player_input == 3:
+                return "hard"
+            elif player_input == 4:
+                break
+            else:
+                invalid_input(language)
+
+        except ValueError:
+            invalid_input(language)
+            continue
+    show_settings_menu(language)
+    print("\n")
+
 
 
 def leave_game(language):

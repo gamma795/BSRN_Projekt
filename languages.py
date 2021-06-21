@@ -16,6 +16,11 @@ deutsch = {
     'change_ship_amount': "Schiffanzahl ändern",
     'change_language': "Sprache ändern",
     'choose_language': "Wählen Sie Ihre Sprache",
+    'change_bot_difficulty': "Schwierigkeitsgrad vom pve Spiel ändern",
+    'choose_bot_level': "Wählen Sie ein Schwierigkeitsgrad für das pve Spiel",
+    'easy': "Einfach",
+    'normal': "Mittel",
+    'hard': "Schwer",
     'how_many_ships': "Wie viele Schiffe wollen Sie platzieren",
     'how_many_ships_error': "Sie müssen mindestens 3 und maximal 10 Schiffe platzieren",
 
@@ -30,13 +35,16 @@ deutsch = {
     'pve': "Player vs Bot",
     'pvp': "Player vs Player",
     'name_first_player': "Wie soll der erste Spieler heißen",
+    'name_human_player': "Wie wollen Sie sich nennen",
     'name_second_player': "Wie soll der zweite Spieler heißen",
     'name_player_error': "Der Name darf nicht Leer sein, und darf max 12 Zeichen haben",
     'name_is_taken': "Dieser Name ist schon belegt. Wählen Sie einen anderen Namen",
     'human_v_human': "Mensch gegen Mensch",
+    'human_v_machine': "Mensch gegen Maschine",
     'welcome': "Willkommen",
     'and': "und",
     'start_the_fight': "Möge die Schlacht beginnen",
+    'you_are_playing_against': "Sie spielen heute gegen",
 
     # In-game phrases
     'press_enter_when': "Drücken Sie ENTER wenn",
@@ -44,6 +52,7 @@ deutsch = {
     'has_won_the_game': "hat gewonnen!",
     'enter_to_go_back': "Drücke Enter um zurück zum Hauptmenu zu kommen",
     'is_playing': "ist dran",
+    'you_are_playing': "Sie sind dran",
     'what_is_your_next_play': "Was ist Ihr nächster Zug",
     'you_ve_already_shot_there': "Sie haben schon auf dieses Feld geschossen",
     'switch_places_and_press_enter_when': "Tauschen Sie die Plätze und drücken Sie Enter wenn",
@@ -53,6 +62,10 @@ deutsch = {
     'sunk': "versenkt",
     'miss_phrases': ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen", "Du Dödel. Voll verfehlt"],
     'hit_phrases': ["Volltreffer", "Hit", "Yippee-ki-yay M*****F*****"],
+    'shot_into_water': "hat ins Wasser geschossen auf",
+    'hit_your': "hat Ihren",
+    'hit_your_2': "getroffen",
+    'destroyed_your': "hat Ihren",
 
     # Ship names
     'patrol_boat': "Patrouillenboot",
@@ -62,6 +75,7 @@ deutsch = {
     'carrier': "Flugzeugträger",
 
     # Ship placement and board printing
+    'placed_their_ships': "hat seine Schiffe gesetzt",
     'place_ships_yourself': "Schiffe selber platzieren",
     'place_ships_randomly': "Schiffe zufällig auf dem Feld verteilen",
     'your': "Dein",
@@ -92,6 +106,11 @@ english = {
     'change_ship_amount': "Change the number of ships",
     'change_language': "Change the language",
     'choose_language': "Choose your language",
+    'change_bot_difficulty': "Change difficulty level of the pve game",
+    'choose_bot_level': "Choose a difficulty level for the pve game",
+    'easy': "Easy",
+    'normal': "Normal",
+    'hard': "Hard",
     'how_many_ships': "How many ships do you want to play with",
     'how_many_ships_error': "You need at least 3 ship and at most 10",
 
@@ -106,13 +125,16 @@ english = {
     'pve': "Player vs Bot",
     'pvp': "Player vs Player",
     'name_first_player': "How should the first player be called",
+    'name_human_player': "How do you want to be called",
     'name_second_player': "How should the second player be called",
     'name_player_error': "The name can't be empty, and can be at most 12 characters long",
     'name_is_taken': "This name is already taken. Choose another name",
     'human_v_human': "Human against Human",
+    'human_v_machine': "Human against the Machine",
     'welcome': "Welcome",
     'and': "and",
     'start_the_fight': "Let the battle begin",
+    'you_are_playing_against': "You are playing against",
 
     # In-game phrases
     'press_enter_when': "Press ENTER when",
@@ -120,6 +142,7 @@ english = {
     'has_won_the_game': "has won the game!",
     'enter_to_go_back': "Press Enter to go back to the main menu",
     'is_playing': "is playing",
+    'you_are_playing': "it is your turn",
     'what_is_your_next_play': "What is your next play",
     'you_ve_already_shot_there': "You've already shot there",
     'switch_places_and_press_enter_when': "Switch places and press Enter when",
@@ -129,6 +152,10 @@ english = {
     'sunk': "",
     'miss_phrases': ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen", "Du Dödel. Voll verfehlt"],
     'hit_phrases': ["Volltreffer", "Hit", "Yippee-ki-yay M*****F*****"],
+    'shot_into_water': "shot into the water on",
+    'hit_your': "hit your",
+    'hit_your_2': "",
+    'destroyed_your': "destoyed your",
 
     # Ship names
     'patrol_boat': "patrol boat",
@@ -138,6 +165,7 @@ english = {
     'carrier': "carrier",
 
     # Ship placement and board printing
+    'placed_their_ships': "placed its ships",
     'place_ships_yourself': "Place the ships yourself",
     'place_ships_randomly': "Place ships randomly on the board",
     'your': "Your",
@@ -168,6 +196,11 @@ francais = {
     'change_ship_amount': "Changer le nombre de bateaux par joueur",
     'change_language': "Changer la langue",
     'choose_language': "Choisissez votre langue",
+    'change_bot_difficulty': "Changer le niveau de difficulté du jeu pve",
+    'choose_bot_level': "Choisissez un niveau de difficulté pour le jeu contre ordinateur",
+    'easy': "Facile",
+    'normal': "Normal",
+    'hard': "Difficile",
     'how_many_ships': "Combien de bateaux voulez-vous par joueur",
     'how_many_ships_error': "Vous devez choisir entre 3 et 10 bateaux par joueur",
 
@@ -182,13 +215,16 @@ francais = {
     'pve': "Joueur vs ordinateur",
     'pvp': "Joueur vs joueur",
     'name_first_player': "Comment s'appelle le premier joueur",
+    'name_human_player': "Comment voulez-vous vous appeler",
     'name_second_player': "Comment s'appelle le deuxième joueur",
     'name_player_error': "Le nom ne peux pas être vide ou plus long que 12 charactères",
     'name_is_taken': "Ce nom est déjà pris. Choisissez un autre nom.",
     'human_v_human': "Humain contre humain",
+    'human_v_machine': "Humain contre Machine",
     'welcome': "Bienvenue",
     'and': "et",
     'start_the_fight': "Que la bataille commence",
+    'you_are_playing_against': "Vous jouez aujourd'hui contre",
 
     # In-game phrases
     'press_enter_when': "Appuyer la touche ENTER dès que",
@@ -196,6 +232,7 @@ francais = {
     'has_won_the_game': "a gagné!",
     'enter_to_go_back': "Appuyer la touche ENTER pour retourner au menu principal",
     'is_playing': ", c'est a votre tour",
+    'you_are_playing': "c'est votre a votre tour",
     'what_is_your_next_play': "Où voulez-vous tirer",
     'you_ve_already_shot_there': "Vous avez déjà tiré sur cette case",
     'switch_places_and_press_enter_when': "Échangez vos places et appuyez la touche ENTER dès que",
@@ -205,6 +242,10 @@ francais = {
     'sunk': "ennemie",
     'miss_phrases': ["A coté", "Un tir dans l'eau", "Raté"],
     'hit_phrases': ["En plein dans le mille", "Touché", "Yippee-ki-yay M*****F*****"],
+    'shot_into_water': "a tirer dans l'eau sur",
+    'hit_your': "a touché votre",
+    'hit_your_2': "",
+    'destroyed_your': "a coulé votre",
 
     # Ship names
     'patrol_boat': "torpilleur",
@@ -214,6 +255,7 @@ francais = {
     'carrier': "porte-avion",
 
     # Ship placement and board printing
+    'placed_their_ships': "a placé ses bateaux",
     'place_ships_yourself': "Placer les bateaux vous même",
     'place_ships_randomly': "Placer les bateaux au hasard",
     'your': "Votre",

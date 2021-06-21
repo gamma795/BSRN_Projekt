@@ -17,7 +17,17 @@ def set_new_player(board_size, language, other_player_name=" "):
                        "          ", "           ", "            "]
 
     # If there is no named player yet, just asks for new name
-    if other_player_name == " ":
+    if other_player_name == "bot":
+        while True:
+            player['name'] = str(input(f"  {language['name_human_player']}: "))
+            if player['name'] not in forbidden_names and len(player['name']) < 13:
+                break
+            else:
+                menu.clear_screen()
+                print(f"  {language['name_player_error']}")
+                continue
+
+    elif other_player_name == " ":
         while True:
             player['name'] = str(input(f"  {language['name_first_player']}: "))
             if player['name'] not in forbidden_names and len(player['name']) < 13:
@@ -92,7 +102,7 @@ def set_ship_distribution(number_of_ships, language):
         ship_list = [carrier, battleship1, battleship2, destroyer, submarine1, submarine2, patrol_boat1, patrol_boat2,
                      patrol_boat3]
 
-    elif number_of_ships == 10:
+    else:
         ship_list = [carrier, battleship1, battleship2, destroyer, submarine1, submarine2, patrol_boat1, patrol_boat2,
                      patrol_boat3, patrol_boat4]
 
@@ -106,57 +116,45 @@ def choose_ship_placement_methode(player, possible_input, ship_list, language):
     print("\n")
 
     print(
-        f"  {player['name']} {language['is_playing']}\n\n\n"
+        f"  {player['name']}, {language['you_are_playing']}\n\n\n"
         f"   1. {language['place_ships_yourself']}\n"
         f"   2. {language['place_ships_randomly']}\n\n")
 
-    flag = 1
-    while flag == 1:
+    while True:
+        try:
+            player_input = int(input(f"  {language['your_choice']}: "))
 
-        if 'Bot' in player['name']:
-            print("Bot hat seine Schiffe gesetzt")
-            menu.clear_screen()
-            player = random_ship_placement(player, possible_input, ship_list, language)
-            break
-
-        while True:
-            try:
-                player_input = int(input(f"  {language['your_choice']}: "))
-
-                # Player chooses ship placement
-                if player_input == 1:
-                    menu.clear_screen()
-                    player = ship_placement(player, possible_input, ship_list, language)
-                    print("\n")
-                    flag += 1
-                    break
-
-                # Random placement of ships
-                elif player_input == 2:
-                    menu.clear_screen()
-                    player = random_ship_placement(player, possible_input, ship_list, language)
-                    print("\n")
-                    flag += 1
-                    break
-
-                # Catch wrong input
-                else:
-                    menu.clear_screen()
-                    print(f"  {player['name']} {language['is_playing']}\n\n\n"
-                          f"   1. {language['place_ships_yourself']}\n"
-                          f"   2. {language['place_ships_randomly']}")
-                    flag += 1
-                    menu.invalid_input(language)
-
-                # Catch wrong value input
-            except ValueError:
+            # Player chooses ship placement
+            if player_input == 1:
                 menu.clear_screen()
-                print(f"  {player['name']} {language['is_playing']}\n\n\n"
+                player = ship_placement(player, possible_input, ship_list, language)
+                print("\n")
+                break
+
+            # Random placement of ships
+            elif player_input == 2:
+                menu.clear_screen()
+                player = random_ship_placement(player, possible_input, ship_list, language)
+                print("\n")
+                break
+
+            # Catch wrong input
+            else:
+                menu.clear_screen()
+                print(f"  {player['name']}, {language['you_are_playing']}\n\n\n"
                       f"   1. {language['place_ships_yourself']}\n"
                       f"   2. {language['place_ships_randomly']}")
                 menu.invalid_input(language)
-                flag += 1
-                continue
+
+            # Catch wrong value input
+        except ValueError:
+            menu.clear_screen()
+            print(f"  {player['name']}, {language['you_are_playing']}\n\n\n"
+                  f"   1. {language['place_ships_yourself']}\n"
+                  f"   2. {language['place_ships_randomly']}")
+            menu.invalid_input(language)
+            continue
+
     return player
 
 
@@ -258,11 +256,7 @@ def random_ship_placement(player, possible_input, ship_list, language):
     return player
 
 
-def check_space(player_input, ship_size, player):
-    """checks if the chosen field would allow the ship to be placed"""
-    # Start with an empty list for the available space
-    available_placement = []
-
+def input_to_coordinates(player_input):
     # Convert player input into two int x and y to check the boards at specific place (case with number 9 or lower)
     if len(player_input) == 2:
         y = ord(player_input[0]) - 65
@@ -273,8 +267,18 @@ def check_space(player_input, ship_size, player):
         y = ord(player_input[0]) - 65
         x = int(player_input[1:3]) - 1
 
+    return x, y
+
+
+def check_space(player_input, ship_size, player, bot_shot=False):
+    """checks if the chosen field would allow the ship to be placed"""
+    # Start with an empty list for the available space
+    available_placement = []
+
+    x, y = input_to_coordinates(player_input)
+
     # Check if starting space is empty, if not return the empty list for available spaces
-    if player['board'][y][x] != "0":
+    if player['board'][y][x] != "0" and not bot_shot:
         return available_placement
 
     check = False
@@ -389,10 +393,7 @@ def ask_input_from(player, possible_input, language):
     while True:
 
         try:
-            if 'Bot' in player['name']:
-                player_input = random_ship_attac(player['board_size'])
-            else:
-                player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
+            player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
 
             if player_input == "EXIT":
                 break
@@ -403,7 +404,7 @@ def ask_input_from(player, possible_input, language):
                     continue
                 else:
                     player['already_tried'].append(player_input)
-                    break
+                    return player_input
             else:
                 drawing_utils.draw_boards(player, language)
                 print(f"\n  {language['invalid_input']}")
@@ -413,8 +414,6 @@ def ask_input_from(player, possible_input, language):
             drawing_utils.draw_boards(player, language)
             print(f"\n  {language['invalid_input']}")
             continue
-
-    return player_input
 
 
 # abc
@@ -466,6 +465,10 @@ def switch_player(active_player, player_1, player_2, language):
 
 def update_boards(active_player, other_player, player_input, language):
     """Update the boards"""
+    if "Bot" in active_player['name']:
+        bot_turn = True
+    else:
+        bot_turn = False
 
     # Convert player input into two int x and y to check the boards at specific place (case with number 9 or lower)
     if len(player_input) == 2:
@@ -479,12 +482,9 @@ def update_boards(active_player, other_player, player_input, language):
 
     # Check opponent Board and update the boards accordingly
     if other_player['board'][y][x] == "0":
+        last_target = "water"
         active_player['guesses'][y][x] = "WG"
         other_player['board'][y][x] = "WG"
-        # Show input result on the board and display Random Confirmation Message out of the predefine list
-        drawing_utils.draw_boards(active_player, language)
-        print("\n  " + random.choice(language['miss_phrases']))
-        input("  Press Enter to Continue")
 
     # If it hit, gets the name of the target, checks if the ship was destroyed and update the boards accordingly
     else:
@@ -505,22 +505,46 @@ def update_boards(active_player, other_player, player_input, language):
         active_player['guesses'][y][x] = "CG"
         other_player['board'][y][x] += "_Hit"
 
-        # Show input result on the board and display Random Confirmation Message out of the predefine list
-        # Also check if any part of the ship is still alive
-        if any(last_target in row for row in other_player['board']):
-            drawing_utils.draw_boards(active_player, language)
-            print("\n  " + random.choice(language['hit_phrases']), end=". ")
-            print(f"  {language['you_ve_hit_an_enemy']}")
-        # If no part of the ship is left it reduces the numbre of ship of the enemy by one
+    # Show input result on the board and display Random Confirmation Message out of the predefine list
+    # Also check if any part of the ship is still alive
+    # If pvp game
+    if not bot_turn:
+        drawing_utils.draw_boards(active_player, language)
+
+        if last_target == "water":
+            print("\n  " + random.choice(language['miss_phrases']))
+
+        elif any(last_target in row for row in other_player['board']):
+            print(f"\n  {random.choice(language['hit_phrases'])}. {language['you_ve_hit_an_enemy']}")
+
+        # If no part of the ship is left it reduces the number of ship of the enemy by one
         else:
             other_player['ships_left'] -= 1
             active_player['enemy_ships_left'] -= 1
 
             drawing_utils.draw_boards(active_player, language)
-            print("\n  " + random.choice(language['hit_phrases']), end=". ")
-            print(f"  {language['you_ve_destroyed']} {last_target_name} {language['sunk']}!")
+            print(f"\n  {random.choice(language['hit_phrases'])}. "
+                  f"{language['you_ve_destroyed']} {last_target_name} {language['sunk']}!")
 
-        input(f"  {language['press_enter_to_continue']}")
+    # If pve game
+    else:
+        drawing_utils.draw_boards(other_player, language)
+        if last_target == "water":
+            print(f"\n  {active_player['name']} {language['shot_into_water']} {player_input}")
+
+        elif any(last_target in row for row in other_player['board']):
+            print(f"\n  {active_player['name']} {language['hit_your']} {last_target_name} {language['hit_your_2']}")
+            active_player['last_shot'].append(player_input)
+
+        # If no part of the ship is left it reduces the number of ship of the enemy by one
+        else:
+            other_player['ships_left'] -= 1
+            active_player['enemy_ships_left'] -= 1
+            active_player['last_shot'] = []
+
+            print(f"\n  {active_player['name']} {language['destroyed_your']} {last_target_name} {language['sunk']}")
+
+    input(f"  {language['press_enter_to_continue']}")
 
     return [active_player, other_player]
 
@@ -531,6 +555,98 @@ def check_if_won(player_1, player_2):
         return True
     else:
         return False
+
+
+def bot_player_input(bot):
+    """Choose Bot input based on its level"""
+    while True:
+        try:
+            # Level easy: bot shots completely at random
+            if bot['level'] == "easy":
+                return random.choice(bot['not_yet_tried'])
+
+            # Level normal: bot shoots at random until it hits, then hunts close to hit
+            elif bot['level'] == "normal":
+                next_shot = []
+
+                # If there was no recent hit without sinking a ship, bot shoots at random
+                if bot['last_shot'] == []:
+                    return random.choice(bot['not_yet_tried'])
+
+                # If there was only one recent hit, Bot checks if adjacent fields are empty
+                elif len(bot['last_shot']) == 1:
+                    x, y = input_to_coordinates(bot['last_shot'][0])
+                    if x != 0 and bot['guesses'][y][x - 1] == "0":
+                        acceptable_field = chr(y + 65) + str(x + 1 - 1)
+                        next_shot.append(acceptable_field)
+
+                    if x < len(bot['guesses']) - 1 and bot['guesses'][y][x + 1] == "0":
+                        acceptable_field = chr(y + 65) + str(x + 1 + 1)
+                        next_shot.append(acceptable_field)
+
+                    if y != 0 and bot['guesses'][y - 1][x] == "0":
+                        acceptable_field = chr(y + 65 - 1) + str(x + 1)
+                        next_shot.append(acceptable_field)
+
+                    if y < len(bot['guesses']) - 1 and bot['guesses'][y + 1][x] == "0":
+                        acceptable_field = chr(y + 65 + 1) + str(x + 1)
+                        next_shot.append(acceptable_field)
+
+
+                # If there was more than one recent hit, bot looks at both end of the hit chain
+                else:
+                    # Transform hit list into two lists of coordinates
+                    x_coordinates = []
+                    y_coordinates = []
+
+                    for i in range(len(bot['last_shot'])):
+                        a, b = input_to_coordinates(bot['last_shot'][i])
+                        x_coordinates.append(a)
+                        y_coordinates.append(b)
+
+                    # If the y coordinates are the same, ship is likely placed horizontally
+                    if y_coordinates[0] == y_coordinates[1]:
+                        # Checks left and right of hit chain
+                        for x_value in x_coordinates:
+                            if x_value != 0 and bot['guesses'][y_coordinates[0]][x_value - 1] == "0":
+                                acceptable_field = chr(y_coordinates[0] + 65) + str(x_value + 1 - 1)
+                                next_shot.append(acceptable_field)
+
+                            if x_value != len(bot['guesses'][0]) - 1 \
+                                    and bot['guesses'][y_coordinates[0]][x_value + 1] == "0":
+                                acceptable_field = chr(y_coordinates[0] + 65) + str(x_value + 1 + 1)
+                                next_shot.append(acceptable_field)
+                        if next_shot == []:
+                            to_be_checked = "x"
+
+                    # If the y coordinates are the same, ship is likely placed vertically
+                    else:
+                        # Checks above and below hit chain
+                        for y_value in y_coordinates:
+                            if y_value != 0 and bot['guesses'][y_value - 1][x_coordinates[0]] == "0":
+                                acceptable_field = chr(y_value - 1 + 65) + str(x_coordinates[0] + 1)
+                                next_shot.append(acceptable_field)
+
+                            if y_value != len(bot['guesses']) - 1 and bot['guesses'][y_value + 1][
+                                x_coordinates[0]] == "0":
+                                acceptable_field = chr(y_value + 1 + 65) + str(x_coordinates[0] + 1)
+                                next_shot.append(acceptable_field)
+                        if next_shot == []:
+                            to_be_checked = "y"
+
+                print(f"Possible shot found : {next_shot}")  # To catch errors
+                if next_shot != []:
+                    return random.choice(next_shot)
+                # For now bot goes back to random shooting. To be changed
+                else:
+                    return random.choice(bot['not_yet_tried'])
+
+            # Level Hard: to be implemented
+            else:
+                return random.choice(bot['not_yet_tried'])
+
+        except ValueError:
+            continue
 
 
 # Diese Funktion greift ein zufälliges Schiff an
