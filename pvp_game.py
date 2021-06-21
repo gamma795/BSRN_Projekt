@@ -66,7 +66,7 @@ def launch(player_1, player_2, settings_values, language):
         player_1 = game_functions.choose_ship_placement_methode(player_1, possible_input, ship_list, language)
         other_player = player_1
 
-    #Shooting phase
+    # Shooting phase
     menu.clear_screen()
     print(f"  {active_player['name']} {language['is_playing']}.\n"
           f"  {language['switch_places_and_press_enter_when']} {other_player['name']} {language['is_not_looking']}: ")
@@ -74,8 +74,10 @@ def launch(player_1, player_2, settings_values, language):
 
     while True:
         if active_player == player_1:
+
             # Ask for player input and check if input is possible
-            player_input = game_functions.ask_input_from(player_1, possible_input, language)
+            player_input = game_functions.ask_input_from(player_1, possible_input,
+                                                         language)
 
             # Option to return to main settings_menu
             if player_input == "EXIT":
@@ -101,7 +103,9 @@ def launch(player_1, player_2, settings_values, language):
 
         else:
             # Ask for player input and check if input is possible
-            player_input = game_functions.ask_input_from(player_2, possible_input, language)
+
+            player_input = game_functions.ask_input_from(player_2, possible_input,
+                                                         language)
 
             # Option to return to main menu
             if player_input == "EXIT":

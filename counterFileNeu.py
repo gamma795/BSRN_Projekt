@@ -1,9 +1,12 @@
+import sys
 import threading
 import time
 import os
 
-global my_input
-global flag
+flag = False
+user_input = "EMPTY"
+stop_sign = False
+start_sign = False
 
 
 def ask():
@@ -11,29 +14,35 @@ def ask():
     Simple function where you ask for input, if he answers
     you print message and exit
     """
-    print("Deine Zeit: ")
 
-    global my_input
     global flag
+    global stop_sign
 
-    my_input = input("Gib ein Feld an, auf das geschossen werden soll: ")
+    my_input = input().upper()
+
     exit_message = "Du hast auf das Feld %s geschossen" % my_input
-    if len(my_input > 0):
-        flag = True
-    else:
-        False
+    flag = True
 
-    # exit(exit_message)
+    exit(exit_message)
+
+    if my_input != "EMPTY":
+        stop_sign = True
+
     return my_input
 
 
 def exit(msg):
+    ### lies unteren Kommentar
     """
     Exit function, prints something and then exits using OS
     Please note you cannot use sys.exit when threading..
     You need to use os._exit instead
     """
+
     print(msg)
+
+    """Mit der Funktion os._exit wird das gesamte Programm beendet und nicht nur der eine Prozess
+    Ich lasse es erst mal auskommentiert, bis wir eine gute Lösung dafür haben"""
     # os._exit(1)
 
 
@@ -41,31 +50,75 @@ def close_if_time_pass(seconds):
     """
     Threading function, after N seconds print something and exit program
     """
-    time.sleep(seconds)
-
-
-bol = flag
-if bol == False:
-    pass
-
-"""
-Threading function, after N seconds print something and exit program
 
     time.sleep(seconds)
-    exit("\nDeine Zeit ist abgelaufen. Es wurde ein zufälliges Feld beschossen")"""
+    global flag, stop_sign
+    stop_sign = True
+
+    exit(
+        "\n  Deine Zeit ist abgelaufen. Es wurde ein zufälliges Felb beschossen\n  Drück die Enter-Taste um fortzufahren")
 
 
-def main():
+# counterfunktion die noch eingabaut werden muss
+# ab t.start() in der main Funktion oben, muss der counter loslaufen
+import time
+
+flag = False
+
+
+def countdown():
+    global start_sign
+    when_to_stop = 15
+    stopp_sign = False
+
+    while when_to_stop > 0 and start_sign == True:#and stopp_sign != True:
+        m, s = divmod(when_to_stop, 60)
+        time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
+        print("\r  Deine Zeit: " + time_left + " ||| Deine Eingabe: ", end="")
+
+        if when_to_stop > 10:
+            time.sleep(2)
+        else:
+            time.sleep(.75)
+        when_to_stop -= 1
+
+        if when_to_stop == -1:
+            global flag
+            flag = True
+            break
+
+        if stopp_sign == True:
+            exit("Zeit abgelaufen")
+            break
+
+
+def main(max):
+    print("\n\n\n\n")
+    import game_functions
+    global start_sign
+
     # define close_if_time_pass as a threading function, 15 as an argument
     t = threading.Thread(target=close_if_time_pass, args=(15,))
+    t2 = threading.Thread(target=countdown)
     # start threading
+
+    start_sign = True
+
+    t2.start()
     t.start()
+
     # ask for input
-    ask()
+    global user_input
+    user_input = ask().upper()
+
+    if len(user_input) < 1:
+        user_input = game_functions.random_ship_attac(max)
+
+    print(t.is_alive())
+    print(t2.is_alive())
+
+    start_sign = False
+
+    return user_input
 
 
-def ret_value():
-    return my_input
-
-# if __name__ == "__main__":
-# main()
