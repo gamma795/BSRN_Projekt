@@ -22,17 +22,14 @@ def ask():
 
     exit_message = "Du hast auf das Feld %s geschossen" % my_input
     flag = True
+    stop_sign = True
 
     exit(exit_message)
-
-    if my_input != "EMPTY":
-        stop_sign = True
 
     return my_input
 
 
 def exit(msg):
-    ### lies unteren Kommentar
     """
     Exit function, prints something and then exits using OS
     Please note you cannot use sys.exit when threading..
@@ -40,10 +37,6 @@ def exit(msg):
     """
 
     print(msg)
-
-    """Mit der Funktion os._exit wird das gesamte Programm beendet und nicht nur der eine Prozess
-    Ich lasse es erst mal auskommentiert, bis wir eine gute Lösung dafür haben"""
-    # os._exit(1)
 
 
 def close_if_time_pass(seconds):
@@ -56,7 +49,7 @@ def close_if_time_pass(seconds):
     stop_sign = True
 
     exit(
-        "\n  Deine Zeit ist abgelaufen. Es wurde ein zufälliges Felb beschossen\n  Drück die Enter-Taste um fortzufahren")
+        "\n  Deine Zeit ist abgelaufen. Es wurde ein zufälliges Feld beschossen\n  Drück die Enter-Taste um fortzufahren")
 
 
 # counterfunktion die noch eingabaut werden muss
@@ -71,16 +64,14 @@ def countdown():
     when_to_stop = 15
     stopp_sign = False
 
-    while when_to_stop > 0 and start_sign == True:#and stopp_sign != True:
+    while when_to_stop > 0 and start_sign == True:  # and stopp_sign != True:
         m, s = divmod(when_to_stop, 60)
         time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
         print("\r  Deine Zeit: " + time_left + " ||| Deine Eingabe: ", end="")
 
-        if when_to_stop > 10:
+        if when_to_stop % 2:
             time.sleep(2)
-        else:
-            time.sleep(.75)
-        when_to_stop -= 1
+            when_to_stop -= 2
 
         if when_to_stop == -1:
             global flag
@@ -109,13 +100,10 @@ def main(max):
 
     # ask for input
     global user_input
-    user_input = ask().upper()
+    user_input = ask()
 
     if len(user_input) < 1:
         user_input = game_functions.random_ship_attac(max)
-
-    print(t.is_alive())
-    print(t2.is_alive())
 
     start_sign = False
 
