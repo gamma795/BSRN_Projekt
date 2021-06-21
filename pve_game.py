@@ -30,6 +30,7 @@ def launch(player_1, bot, settings_values, language):
     bot['enemy_ships_left'] = settings_values['number_of_ships']
     bot['level'] = settings_values['bot_difficulty']
     bot['last_shot'] = []
+    bot['multiple_ships_hit'] = []
     menu.clear_screen()
 
     menu.clear_screen()
@@ -59,7 +60,7 @@ def launch(player_1, bot, settings_values, language):
     while True:
         if active_player == player_1:
             # Ask for player input and check if input is possible
-            player_input = game_functions.ask_input_from(player_1, possible_input, language)
+            player_input = game_functions.ask_input_from(player_1, possible_input, language, settings_values)
 
             # Option to return to main settings_menu
             if player_input == "EXIT":
@@ -84,9 +85,9 @@ def launch(player_1, bot, settings_values, language):
             active_player = bot
 
         else:
-            print(f"Last hit spaces are :  {active_player['last_shot']}") # To catch errors
+            print(f"Last hit spaces are :  {active_player['last_shot']}")   # To catch errors
             player_input = game_functions.bot_player_input(bot)
-            print("Bot chose " + player_input) # To catch errors
+            print("Bot chose " + player_input)   # To catch errors
             bot['not_yet_tried'].remove(player_input)
 
             # Update the boards

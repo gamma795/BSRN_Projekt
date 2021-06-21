@@ -28,7 +28,7 @@ def boards_to_blueprint(player, board_spacing):
     # Defines how big the Blueprint is going to be and fills it with empty spaces
     blueprint_height = len(player['board']) * 2 + 3
     blueprint_width = 1 + (len(player['board'][0]) * 2 + 3) * 2 + board_spacing
-    blueprint = [["   " for i in range(blueprint_width)] for j in range(blueprint_height)]
+    blueprint = [["   " for _ in range(blueprint_width)] for _ in range(blueprint_height)]
 
     # Fill in the players board with space in between for the walls
     for y in range(len(player['board'])):

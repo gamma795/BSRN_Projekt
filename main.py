@@ -6,7 +6,7 @@ import menu
 # Settings defaults values
 # could import statistic from existing file instead if we implement this feature
 language = languages.deutsch
-settings_values = {'board_size': 7, 'number_of_ships': 10, 'bot_difficulty': "normal"}
+settings_values = {'board_size': 7, 'number_of_ships': 10, 'bot_difficulty': "normal", 'countdown_on': True}
 player_1 = {'name': "Player 1", 'score': 0}
 player_2 = {'name': "Player 2", 'score': 0}
 

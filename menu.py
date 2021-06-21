@@ -31,7 +31,8 @@ def show_settings_menu(language):
           f"   2: {language['change_ship_amount']}\n"
           f"   3: {language['change_language']}\n"
           f"   4: {language['change_bot_difficulty']}\n"
-          f"   5: {language['back']}")
+          f"   5: {language['toggle_countdown']}\n"
+          f"   6: {language['back']}")
 
 
 def settings_menu(settings_values, language):
@@ -101,8 +102,37 @@ def settings_menu(settings_values, language):
                 show_settings_menu(language)
                 print("\n")
 
-            # Go back to main settings_menu
             elif settings_menu_input == 5:
+                # Show the language choices and ask for input
+                while True:
+                    try:
+                        clear_screen()
+                        print(f"  {language['toggle_countdown_default_on']}\n\n")
+                        print(f"   1: {language['countdown_on']}\n"
+                              f"   2: {language['countdown_off']}\n"
+                              f"   3: {language['back']}\n\n")
+                        player_input = int(input(f"  {language['your_choice']}: "))
+
+                        # Change language to the one the user chose
+                        if player_input == 1:
+                            settings_values['countdown_on'] = True
+                            break
+                        elif player_input == 2:
+                            settings_values['countdown_on'] = False
+                            break
+                        elif player_input == 3:
+                            break
+                        else:
+                            invalid_input(language)
+
+                    except ValueError:
+                        invalid_input(language)
+                        continue
+                show_settings_menu(language)
+                print("\n")
+
+            # Go back to main settings_menu
+            elif settings_menu_input == 6:
                 clear_screen()
                 show_main_menu(language)
                 print("\n")
@@ -212,6 +242,7 @@ def set_number_of_ships(language):
 
     return ships_num
 
+
 def set_bot_difficulty(language):
     while True:
         try:
@@ -240,7 +271,6 @@ def set_bot_difficulty(language):
             continue
     show_settings_menu(language)
     print("\n")
-
 
 
 def leave_game(language):

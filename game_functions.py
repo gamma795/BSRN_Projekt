@@ -6,7 +6,7 @@ import counterFileNeu
 
 def setup_new_board(board_size):
     """Sets up a new board matrix filled with 0s"""
-    board = [["0" for i in range(board_size)] for j in range(board_size)]
+    board = [["0" for _ in range(board_size)] for _ in range(board_size)]
     return board
 
 
@@ -387,7 +387,7 @@ def place_ship_down(player, ship, input_ship_front, input_ship_back):
     return player
 
 
-def ask_input_from(player, possible_input, language):
+def ask_input_from(player, possible_input, language, settings_values):
     flag = False
     """Ask for player input and checks against list of possible inputs and already tried"""
     drawing_utils.draw_boards(player, language)
@@ -395,13 +395,12 @@ def ask_input_from(player, possible_input, language):
     while True:
 
         try:
-            player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
-            if 'Bot' in player['name']:
-                player_input = random_ship_attac(player['board_size'])
-
-            else:
+            if settings_values['countdown_on']:
                 player_input = counterFileNeu.main(len(player['board']))
                 flag = True
+
+            else:
+                player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
 
             if player_input == "EXIT":
                 break
@@ -547,71 +546,73 @@ def bot_player_input(bot):
             # Level normal: bot shoots at random until it hits, then hunts close to hit
             elif bot['level'] == "normal":
                 next_shot = []
+                if bot['multiple_ships_hit'] == []:
+                    # If there was no recent hit without sinking a ship, bot shoots at random
+                    if bot['last_shot'] == []:
+                        return random.choice(bot['not_yet_tried'])
 
-                # If there was no recent hit without sinking a ship, bot shoots at random
-                if bot['last_shot'] == []:
-                    return random.choice(bot['not_yet_tried'])
+                    # If there was only one recent hit, Bot checks if adjacent fields are empty
+                    elif len(bot['last_shot']) == 1:
+                        x, y = input_to_coordinates(bot['last_shot'][0])
+                        if x != 0 and bot['guesses'][y][x - 1] == "0":
+                            acceptable_field = chr(y + 65) + str(x + 1 - 1)
+                            next_shot.append(acceptable_field)
 
-                # If there was only one recent hit, Bot checks if adjacent fields are empty
-                elif len(bot['last_shot']) == 1:
-                    x, y = input_to_coordinates(bot['last_shot'][0])
-                    if x != 0 and bot['guesses'][y][x - 1] == "0":
-                        acceptable_field = chr(y + 65) + str(x + 1 - 1)
-                        next_shot.append(acceptable_field)
+                        if x < len(bot['guesses']) - 1 and bot['guesses'][y][x + 1] == "0":
+                            acceptable_field = chr(y + 65) + str(x + 1 + 1)
+                            next_shot.append(acceptable_field)
 
-                    if x < len(bot['guesses']) - 1 and bot['guesses'][y][x + 1] == "0":
-                        acceptable_field = chr(y + 65) + str(x + 1 + 1)
-                        next_shot.append(acceptable_field)
+                        if y != 0 and bot['guesses'][y - 1][x] == "0":
+                            acceptable_field = chr(y + 65 - 1) + str(x + 1)
+                            next_shot.append(acceptable_field)
 
-                    if y != 0 and bot['guesses'][y - 1][x] == "0":
-                        acceptable_field = chr(y + 65 - 1) + str(x + 1)
-                        next_shot.append(acceptable_field)
+                        if y < len(bot['guesses']) - 1 and bot['guesses'][y + 1][x] == "0":
+                            acceptable_field = chr(y + 65 + 1) + str(x + 1)
+                            next_shot.append(acceptable_field)
 
-                    if y < len(bot['guesses']) - 1 and bot['guesses'][y + 1][x] == "0":
-                        acceptable_field = chr(y + 65 + 1) + str(x + 1)
-                        next_shot.append(acceptable_field)
-
-
-                # If there was more than one recent hit, bot looks at both end of the hit chain
-                else:
-                    # Transform hit list into two lists of coordinates
-                    x_coordinates = []
-                    y_coordinates = []
-
-                    for i in range(len(bot['last_shot'])):
-                        a, b = input_to_coordinates(bot['last_shot'][i])
-                        x_coordinates.append(a)
-                        y_coordinates.append(b)
-
-                    # If the y coordinates are the same, ship is likely placed horizontally
-                    if y_coordinates[0] == y_coordinates[1]:
-                        # Checks left and right of hit chain
-                        for x_value in x_coordinates:
-                            if x_value != 0 and bot['guesses'][y_coordinates[0]][x_value - 1] == "0":
-                                acceptable_field = chr(y_coordinates[0] + 65) + str(x_value + 1 - 1)
-                                next_shot.append(acceptable_field)
-
-                            if x_value != len(bot['guesses'][0]) - 1 \
-                                    and bot['guesses'][y_coordinates[0]][x_value + 1] == "0":
-                                acceptable_field = chr(y_coordinates[0] + 65) + str(x_value + 1 + 1)
-                                next_shot.append(acceptable_field)
-                        if next_shot == []:
-                            to_be_checked = "x"
-
-                    # If the y coordinates are the same, ship is likely placed vertically
+                    # If there was more than one recent hit, bot looks at both end of the hit chain
                     else:
-                        # Checks above and below hit chain
-                        for y_value in y_coordinates:
-                            if y_value != 0 and bot['guesses'][y_value - 1][x_coordinates[0]] == "0":
-                                acceptable_field = chr(y_value - 1 + 65) + str(x_coordinates[0] + 1)
-                                next_shot.append(acceptable_field)
+                        # Transform hit list into two lists of coordinates
+                        x_coordinates = []
+                        y_coordinates = []
 
-                            if y_value != len(bot['guesses']) - 1 and bot['guesses'][y_value + 1][
-                                x_coordinates[0]] == "0":
-                                acceptable_field = chr(y_value + 1 + 65) + str(x_coordinates[0] + 1)
-                                next_shot.append(acceptable_field)
-                        if next_shot == []:
-                            to_be_checked = "y"
+                        for i in range(len(bot['last_shot'])):
+                            a, b = input_to_coordinates(bot['last_shot'][i])
+                            x_coordinates.append(a)
+                            y_coordinates.append(b)
+
+                        # If the y coordinates are the same, ship is likely placed horizontally
+                        if y_coordinates[0] == y_coordinates[1]:
+                            # Checks left and right of hit chain
+                            for x_value in x_coordinates:
+                                if x_value != 0 and bot['guesses'][y_coordinates[0]][x_value - 1] == "0":
+                                    acceptable_field = chr(y_coordinates[0] + 65) + str(x_value + 1 - 1)
+                                    next_shot.append(acceptable_field)
+
+                                if x_value != len(bot['guesses'][0]) - 1 \
+                                        and bot['guesses'][y_coordinates[0]][x_value + 1] == "0":
+                                    acceptable_field = chr(y_coordinates[0] + 65) + str(x_value + 1 + 1)
+                                    next_shot.append(acceptable_field)
+
+                            if next_shot == []:
+                                for fields in bot['last_shot']:
+                                    bot['multiple_ships_hit'].append(fields)
+
+                        # If the y coordinates are the same, ship is likely placed vertically
+                        else:
+                            # Checks above and below hit chain
+                            for y_value in y_coordinates:
+                                if y_value != 0 and bot['guesses'][y_value - 1][x_coordinates[0]] == "0":
+                                    acceptable_field = chr(y_value - 1 + 65) + str(x_coordinates[0] + 1)
+                                    next_shot.append(acceptable_field)
+
+                                if y_value != len(bot['guesses']) - 1 and bot['guesses'][y_value + 1][
+                                    x_coordinates[0]] == "0":
+                                    acceptable_field = chr(y_value + 1 + 65) + str(x_coordinates[0] + 1)
+                                    next_shot.append(acceptable_field)
+
+                            if next_shot == []:
+                                to_be_checked = "y"
 
                 print(f"Possible shot found : {next_shot}")  # To catch errors
                 if next_shot != []:
