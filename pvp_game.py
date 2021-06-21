@@ -77,7 +77,7 @@ def launch(player_1, player_2, settings_values, language):
 
             # Ask for player input and check if input is possible
             player_input = game_functions.ask_input_from(player_1, possible_input,
-                                                         language)
+                                                         language, settings_values)
 
             # Option to return to main settings_menu
             if player_input == "EXIT":
@@ -105,7 +105,7 @@ def launch(player_1, player_2, settings_values, language):
             # Ask for player input and check if input is possible
 
             player_input = game_functions.ask_input_from(player_2, possible_input,
-                                                         language)
+                                                         language, settings_values)
 
             # Option to return to main menu
             if player_input == "EXIT":
