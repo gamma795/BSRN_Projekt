@@ -547,7 +547,7 @@ def bot_player_input(bot):
                 return random.choice(bot['not_yet_tried'])
 
             # Level normal: bot shoots at random until it hits, then hunts close to hit
-            elif bot['level'] == "normal":
+            else:
                 next_shot = []
                 # If there is no unkilled target in last_shot but there are still unkilled ships that where hit
                 # Bot choses randomly one of the list as the next target to seek
@@ -556,7 +556,10 @@ def bot_player_input(bot):
 
                 # If there was no recent hit without sinking a ship, bot shoots at random
                 if bot['current_target'] == []:
-                    return random.choice(bot['not_yet_tried'])
+                    if bot['level'] == "normal":
+                        return random.choice(bot['not_yet_tried'])
+                    else:
+                        return smart_random_shot(bot)
 
                 # If there was only one recent hit, Bot checks if adjacent fields are empty
                 # Empty fields are added to the next_shot list
@@ -630,8 +633,6 @@ def bot_player_input(bot):
                 continue
 
             # Level Hard: to be implemented
-            else:
-                return random.choice(bot['not_yet_tried'])
 
         except ValueError:
             continue
@@ -652,3 +653,20 @@ def random_ship_attac(max):
     output = y + str(x)
     print(output)
     return output
+
+
+def smart_random_shot(bot):
+    hunting_grid_00 = []
+    hunting_grid_01 = []
+    for y in range(len(bot['guesses'])):
+        for x in range(len(bot['guesses'])):
+            if bot['guesses'][y][x] == "0":
+                if (y % 2 == 0 and x % 2 == 0) or (y % 2 == 1 and x % 2 == 1):
+                    hunting_grid_00.append(chr(65 + y) + str(x + 1))
+                else:
+                    hunting_grid_01.append(chr(65 + y) + str(x + 1))
+
+    if len(hunting_grid_00) < len(hunting_grid_01):
+        return random.choice(hunting_grid_00)
+    else:
+        return random.choice(hunting_grid_01)
