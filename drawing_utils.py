@@ -151,8 +151,8 @@ def draw_boards(player, language):
 
     menu.clear_screen()
     print(f"   {player['name']} {language['is_playing']}:\n"
-          f"        {header_1}{header_1_spacing}{final_spacing}       {header_2}\n"
-          f"        {sub_header}{player['ships_left']}{sub_header_spacing}{final_spacing}       {sub_header}{player['enemy_ships_left']}\n\n")
+          f"         {header_1}{header_1_spacing}{final_spacing}           {header_2}\n"
+          f"         {sub_header}{player['ships_left']}{sub_header_spacing}{final_spacing}           {sub_header}{player['enemy_ships_left']}\n\n")
 
     # Print the boards
     for y in blueprint:

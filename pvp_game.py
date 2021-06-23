@@ -7,20 +7,24 @@ def launch(player_1, player_2, settings_values, language):
     menu.clear_screen()
     print("  \n")
 
-    # Create the 2 players with empty boards
-    player_1 = game_functions.set_new_player(settings_values['board_size'], language)
-    player_1['ships_left'] = settings_values['number_of_ships']
-    player_1['enemy_ships_left'] = settings_values['number_of_ships']
-
-    player_2 = game_functions.set_new_player(settings_values['board_size'], language, player_1['name'])
-    player_2['ships_left'] = settings_values['number_of_ships']
-    player_2['enemy_ships_left'] = settings_values['number_of_ships']
-
     # Set possible input list
     possible_input = []
     for y in range(settings_values['board_size']):
         for x in range(settings_values['board_size']):
             possible_input.append(chr(65 + y) + str(x + 1))
+
+    # Create the 2 players with empty boards
+    player_1 = game_functions.set_new_player(settings_values['board_size'], language)
+    player_1['ships_left'] = settings_values['number_of_ships']
+    player_1['enemy_ships_left'] = settings_values['number_of_ships']
+    player_1['not_yet_tried'] = []
+    player_1['not_yet_tried'].extend(possible_input)
+
+    player_2 = game_functions.set_new_player(settings_values['board_size'], language, player_1['name'])
+    player_2['ships_left'] = settings_values['number_of_ships']
+    player_2['enemy_ships_left'] = settings_values['number_of_ships']
+    player_2['not_yet_tried'] = []
+    player_2['not_yet_tried'].extend(possible_input)
 
     menu.clear_screen()
     ship_list = game_functions.set_ship_distribution(settings_values['number_of_ships'], language)
