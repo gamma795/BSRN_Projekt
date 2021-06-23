@@ -60,7 +60,6 @@ def set_new_player(board_size, language, other_player_name=" "):
 
     player['board'] = setup_new_board(board_size)
     player['guesses'] = setup_new_board(board_size)
-    player['already_tried'] = []
 
     return player
 
@@ -396,7 +395,7 @@ def ask_input_from(player, possible_input, language, settings_values):
 
         try:
             if settings_values['countdown_on']:
-                player_input = counterFileNeu.main(len(player['board']))
+                player_input = counterFileNeu.main(player, language)
                 flag = True
 
             else:
@@ -405,12 +404,12 @@ def ask_input_from(player, possible_input, language, settings_values):
             if player_input == "EXIT":
                 break
             if player_input in possible_input:
-                if player_input in player['already_tried']:
+                if player_input not in player['not_yet_tried']:
                     drawing_utils.draw_boards(player, language)
                     print(f"\n  {language['you_ve_already_shot_there']}.")
                     continue
                 else:
-                    player['already_tried'].append(player_input)
+                    player['not_yet_tried'].remove(player_input)
                     return player_input
             else:
                 drawing_utils.draw_boards(player, language)
@@ -656,17 +655,86 @@ def random_ship_attac(max):
 
 
 def smart_random_shot(bot):
-    hunting_grid_00 = []
-    hunting_grid_01 = []
-    for y in range(len(bot['guesses'])):
-        for x in range(len(bot['guesses'])):
-            if bot['guesses'][y][x] == "0":
-                if (y % 2 == 0 and x % 2 == 0) or (y % 2 == 1 and x % 2 == 1):
-                    hunting_grid_00.append(chr(65 + y) + str(x + 1))
-                else:
-                    hunting_grid_01.append(chr(65 + y) + str(x + 1))
+    """Check what the smallest player ship is and looks for the ideal hunting grid accordingly"""
 
-    if len(hunting_grid_00) < len(hunting_grid_01):
-        return random.choice(hunting_grid_00)
+    # If the smallest ship is 2 field long there are only 2 possible hunting grid
+    if 2 in bot['enemy_ship_sizes']:
+        hunting_grid_00 = []
+        hunting_grid_01 = []
+
+        # Checks every fields, and adds the empty one to the girds its part of
+        for y in range(len(bot['guesses'])):
+            for x in range(len(bot['guesses'])):
+                if bot['guesses'][y][x] == "0":
+                    if (y % 2 == 0 and x % 2 == 0) or (y % 2 == 1 and x % 2 == 1):
+                        hunting_grid_00.append(chr(65 + y) + str(x + 1))
+                    else:
+                        hunting_grid_01.append(chr(65 + y) + str(x + 1))
+
+        # Finally, it checks which list is the smallest of the 2, and sets it as our hunting grid
+        if len(hunting_grid_00) < len(hunting_grid_01):
+            hunting_grid = hunting_grid_00
+        else:
+            hunting_grid = hunting_grid_01
+
+    # If the smallest ship is already sunk, the next smallest one is 3 field long
     else:
-        return random.choice(hunting_grid_01)
+        # This gives us 6 possible grids of diagonal lines spaced by 2 fields
+        # Named based on their first position in the x=0 column and wherever the diagonal goes up or down from there
+        hunting_grid_0_up = []
+        hunting_grid_0_down = []
+        hunting_grid_1_up = []
+        hunting_grid_1_down = []
+        hunting_grid_2_up = []
+        hunting_grid_2_down = []
+        possible_grids = [hunting_grid_0_up,
+                          hunting_grid_0_down,
+                          hunting_grid_1_up,
+                          hunting_grid_1_down,
+                          hunting_grid_2_up,
+                          hunting_grid_2_down]
+        # Each field is checked and the empty ones are added to their corresponding grid
+        for y in range(len(bot['guesses'])):
+            for x in range(len(bot['guesses'])):
+                if bot['guesses'][y][x] == "0":
+                    if (x % 3 == 0):
+                        if (y % 3 == 0):
+                            hunting_grid_0_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_0_down.append(chr(65 + y) + str(x + 1))
+                        elif (y % 3 == 1):
+                            hunting_grid_1_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_1_down.append(chr(65 + y) + str(x + 1))
+                        elif (y % 3 == 2):
+                            hunting_grid_2_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_2_down.append(chr(65 + y) + str(x + 1))
+
+                    elif (x % 3 == 1):
+                        if (y % 3 == 0):
+                            hunting_grid_1_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_2_down.append(chr(65 + y) + str(x + 1))
+                        elif (y % 3 == 1):
+                            hunting_grid_2_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_0_down.append(chr(65 + y) + str(x + 1))
+                        elif (y % 3 == 2):
+                            hunting_grid_0_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_1_down.append(chr(65 + y) + str(x + 1))
+
+                    elif (x % 3 == 2):
+                        if (y % 3 == 0):
+                            hunting_grid_2_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_1_down.append(chr(65 + y) + str(x + 1))
+                        elif (y % 3 == 1):
+                            hunting_grid_0_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_2_down.append(chr(65 + y) + str(x + 1))
+                        elif (y % 3 == 2):
+                            hunting_grid_1_up.append(chr(65 + y) + str(x + 1))
+                            hunting_grid_0_down.append(chr(65 + y) + str(x + 1))
+
+        # A possible grid is chosen at random and all grid are compared to each other to find the smallest
+        hunting_grid = random.choice(possible_grids)
+        for grid in possible_grids:
+            if len(grid) < len(hunting_grid):
+                hunting_grid = grid
+
+    # Once the smallest grid is found (i.e. the one with the least field left to check), one field is chosen at random
+    return random.choice(hunting_grid)

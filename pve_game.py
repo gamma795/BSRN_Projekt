@@ -16,25 +16,43 @@ def launch(player_1, bot, settings_values, language):
         for x in range(settings_values['board_size']):
             possible_input.append(chr(65 + y) + str(x + 1))
 
+    ship_list = game_functions.set_ship_distribution(settings_values['number_of_ships'], language)
+
+    # Player is set up
     player_1 = game_functions.set_new_player(settings_values['board_size'], language, "bot")
     player_1['ships_left'] = settings_values['number_of_ships']
     player_1['enemy_ships_left'] = settings_values['number_of_ships']
+    player_1['not_yet_tried'] = []
+    player_1['not_yet_tried'].extend(possible_input)
 
-    bot_name = ["Silly", "Bad", "Idiot", "Slow", "Dumb"]
-    bot['name'] = random.choice(bot_name) + " Bot"
+    # Bot is set up based on its difficulty level
+    bot['level'] = settings_values['bot_difficulty']
+
+    if bot['level'] is "hard":
+        bot_name = ["Smart", "Dangerous", "Cool"]
+        bot['name'] = random.choice(bot_name) + " Bot"
+        bot['enemy_ship_sizes'] = []
+        for ships in ship_list:
+            bot['enemy_ship_sizes'].append(ships['size'])
+
+    elif bot['level'] is "normal":
+        bot_name = ["Chill", "Average"]
+        bot['name'] = random.choice(bot_name) + " Bot"
+
+    else:
+        bot_name = ["Silly", "Bad", "Idiot", "Slow", "Dumb"]
+        bot['name'] = random.choice(bot_name) + " Bot"
+
     bot['board'] = game_functions.setup_new_board(board_size)
     bot['guesses'] = game_functions.setup_new_board(board_size)
     bot['not_yet_tried'] = []
     bot['not_yet_tried'].extend(possible_input)
     bot['ships_left'] = settings_values['number_of_ships']
     bot['enemy_ships_left'] = settings_values['number_of_ships']
-    bot['level'] = settings_values['bot_difficulty']
     bot['current_target'] = []
     bot['possible_target'] = []
-    menu.clear_screen()
 
     menu.clear_screen()
-    ship_list = game_functions.set_ship_distribution(settings_values['number_of_ships'], language)
 
     # Welcome message
     menu.clear_screen()

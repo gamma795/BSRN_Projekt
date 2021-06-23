@@ -70,6 +70,9 @@ deutsch = {
     'hit_your': "hat Ihren",
     'hit_your_2': "getroffen",
     'destroyed_your': "hat Ihren",
+    'your_time': "Ihre Zeit",
+    'times_up': "Zeit ist abgelaufen",
+    'times_up_random_shot': "Ihre Zeit ist abgelaufen. Es wurde ein zufälliges Feld beschossen",
 
     # Ship names
     'patrol_boat': "Patrouillenboot",
@@ -82,10 +85,10 @@ deutsch = {
     'placed_their_ships': "hat seine Schiffe gesetzt",
     'place_ships_yourself': "Schiffe selber platzieren",
     'place_ships_randomly': "Schiffe zufällig auf dem Feld verteilen",
-    'your': "Dein",
+    'your': "Ihr",
     'is': "ist",
     'field_big_where_to_start': "Felder groß. Wo soll die Spitze liegen",
-    'not_enough_space_for': "An dieser Stelle ist nicht genug Platz für dein",
+    'not_enough_space_for': "An dieser Stelle ist nicht genug Platz für Ihren",
     'the_front_is_on': "Die Spitze ist bei",
     'where_to_put_the_back__your_choices': "Wo soll das Ende des Schiffes liegen? Möglichkeiten sind",
     'your_board': "Ihr Spielfeld",
@@ -164,6 +167,9 @@ english = {
     'hit_your': "hit your",
     'hit_your_2': "",
     'destroyed_your': "destoyed your",
+    'your_time': "Your time",
+    'times_up': "Time's up",
+    'times_up_random_shot': "Your time is up, a random field was chosen",
 
     # Ship names
     'patrol_boat': "patrol boat",
@@ -258,6 +264,9 @@ francais = {
     'hit_your': "a touché votre",
     'hit_your_2': "",
     'destroyed_your': "a coulé votre",
+    'your_time': "Votre temps",
+    'times_up': "Votre temps est écoulé",
+    'times_up_random_shot': "Votre temps est écoulé. Une case a été choisi au hasard.",
 
     # Ship names
     'patrol_boat': "torpilleur",

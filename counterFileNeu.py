@@ -1,7 +1,10 @@
+import random
 import sys
 import threading
 import time
 import os
+
+import drawing_utils
 
 flag = False
 user_input = "EMPTY"
@@ -39,7 +42,7 @@ def exit(msg):
     print(msg)
 
 
-def close_if_time_pass(seconds):
+def close_if_time_pass(seconds, player, language):
     """
     Threading function, after N seconds print something and exit program
     """
@@ -48,8 +51,8 @@ def close_if_time_pass(seconds):
     global flag, stop_sign
     stop_sign = True
 
-    exit(
-        "\n  Deine Zeit ist abgelaufen. Es wurde ein zufälliges Feld beschossen\n  Drück die Enter-Taste um fortzufahren")
+    drawing_utils.draw_boards(player, language)
+    exit(f"  {language['times_up_random_shot']}\n  {language['press_enter_to_continue']}")
 
 
 # counterfunktion die noch eingabaut werden muss
@@ -59,7 +62,7 @@ import time
 flag = False
 
 
-def countdown():
+def countdown(language):
     global start_sign
     when_to_stop = 15
     stopp_sign = False
@@ -67,7 +70,7 @@ def countdown():
     while when_to_stop > 0 and start_sign == True:  # and stopp_sign != True:
         m, s = divmod(when_to_stop, 60)
         time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
-        print("\r  Deine Zeit: " + time_left + " ||| Deine Eingabe: ", end="")
+        print(f"\r  {language['your_time']}:  {time_left}  ||| {language['your_choice']}: ", end="")
 
         if when_to_stop % 2:
             time.sleep(2)
@@ -79,18 +82,17 @@ def countdown():
             break
 
         if stopp_sign == True:
-            exit("Zeit abgelaufen")
+            exit({language['times_up']})
             break
 
 
-def main(max):
-
+def main(player, language):
     import game_functions
     global start_sign
 
     # define close_if_time_pass as a threading function, 15 as an argument
-    t = threading.Thread(target=close_if_time_pass, args=(15,))
-    t2 = threading.Thread(target=countdown)
+    t = threading.Thread(target=close_if_time_pass, args=(15, player, language,))
+    t2 = threading.Thread(target=countdown, args=(language,))
     # start threading
 
     start_sign = True
@@ -103,11 +105,8 @@ def main(max):
     user_input = ask()
 
     if len(user_input) < 1:
-        user_input = game_functions.random_ship_attac(max)
+        user_input = random.choice(player['not_yet_tried'])
 
     start_sign = False
 
     return user_input
-
-
-
