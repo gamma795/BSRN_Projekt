@@ -85,7 +85,6 @@ def countdown(language):
 
 def main(player, language):
     # print("\n\n\n\n")
-    import game_functions
     global start_sign, check
 
     # bool variables that are needed to start
