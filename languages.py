@@ -2,7 +2,7 @@
 
 deutsch = {
     # Main menu
-    'welcome_screen': "Wilkommen bei SCHIFFEVERSENKEN-2021",
+    'welcome_screen': "Wilkommen bei Schiffe-Versenken-2021",
     'bye': "Auf Wiedersehen!", 'invalid_input': "Die Eingabe ist keine gültige Option.",
     'start_game': "Spiel starten",
     'quit': "Spiel verlassen",
@@ -64,8 +64,8 @@ deutsch = {
     'you_ve_hit_an_enemy': "Sie haben ein gegnerisches Schiffe getroffen!",
     'you_ve_destroyed': "Sie haben das gegnerische",
     'sunk': "versenkt",
-    'miss_phrases': ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen", "Du Dödel. Voll verfehlt"],
-    'hit_phrases': ["Volltreffer", "Hit", "Yippee-ki-yay M*****F*****"],
+    'miss_phrases': ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen"],
+    'hit_phrases': ["Volltreffer", "Hit"],
     'shot_into_water': "hat ins Wasser geschossen auf",
     'hit_your': "hat Ihren",
     'hit_your_2': "getroffen",
@@ -93,7 +93,7 @@ deutsch = {
     'where_to_put_the_back__your_choices': "Wo soll das Ende des Schiffes liegen? Möglichkeiten sind",
     'your_board': "Ihr Spielfeld",
     'your_enemys_board': "Das Spielfeld des Gegners",
-    'how_many_ships_left': "Anzahl an lebenden Schiffen: "
+    'how_many_ships_left': "Anzahl an übrigen Schiffen: "
 }
 
 english = {
@@ -161,8 +161,8 @@ english = {
     'you_ve_hit_an_enemy': "You've hit the enemy's ",
     'you_ve_destroyed': "You've destroyed the enemy's ",
     'sunk': "",
-    'miss_phrases': ["Daneben", "Ein Schuss ins Wasser", "Nicht getroffen", "Du Dödel. Voll verfehlt"],
-    'hit_phrases': ["Volltreffer", "Hit", "Yippee-ki-yay M*****F*****"],
+    'miss_phrases': ["Miss", "Shot in the water", "This shot did not hit"],
+    'hit_phrases': ["Bullseye", "Hit", "Perfect Shot"],
     'shot_into_water': "shot into the water on",
     'hit_your': "hit your",
     'hit_your_2': "",
@@ -259,7 +259,7 @@ francais = {
     'you_ve_destroyed': "Vous avez coulez le ",
     'sunk': "ennemie",
     'miss_phrases': ["A coté", "Un tir dans l'eau", "Raté"],
-    'hit_phrases': ["En plein dans le mille", "Touché", "Yippee-ki-yay M*****F*****"],
+    'hit_phrases': ["En plein dans le mille", "Touché", "Un tir parfait"],
     'shot_into_water': "a tirer dans l'eau sur",
     'hit_your': "a touché votre",
     'hit_your_2': "",

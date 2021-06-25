@@ -28,7 +28,7 @@ def ask():
     my_input = input().upper()
 
     if len(my_input) > 0:
-        exit_message = "Du hast auf das Feld %s geschossen" % my_input
+        exit_message = "  Du hast auf das Feld %s geschossen" % my_input
         exit(exit_message)
 
     return my_input
@@ -53,10 +53,11 @@ def close_if_time_pass(seconds, player, language):
     global when_to_stop, my_input, check
 
     # Conditions are true if time is up and there was no user input
-    if when_to_stop <= 1 and len(my_input) < 1 and check == False:
+    if when_to_stop <= 1 and len(my_input) < 1 and check is False:
         menu.clear_screen()
         drawing_utils.draw_boards(player, language)
         exit(f"  {language['times_up_random_shot']}\n  {language['press_enter_to_continue']}")
+
 
 def countdown(language):
     global start_sign, when_to_stop
@@ -65,7 +66,7 @@ def countdown(language):
     when_to_stop = 15
 
     # countdown starts if time greater than 0 and start sign is true
-    while when_to_stop >= 0 and start_sign == True:
+    while when_to_stop >= 0 and start_sign is True:
         m, s = divmod(when_to_stop, 60)
         time_left = str(m).zfill(2) + ":" + str(s).zfill(2)
         print(f"\r  {language['your_time']}:  {time_left}  ||| {language['your_choice']}: ", end="")
