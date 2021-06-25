@@ -3,28 +3,19 @@ import menu
 import game_functions
 
 
-def launch(player_1, player_2, settings_values, language):
+def launch(settings_values, language):
     menu.clear_screen()
     print("  \n")
 
-    # Set possible input list
+    # Set a list of all possible input
     possible_input = []
     for y in range(settings_values['board_size']):
         for x in range(settings_values['board_size']):
             possible_input.append(chr(65 + y) + str(x + 1))
 
     # Create the 2 players with empty boards
-    player_1 = game_functions.set_new_player(settings_values['board_size'], language)
-    player_1['ships_left'] = settings_values['number_of_ships']
-    player_1['enemy_ships_left'] = settings_values['number_of_ships']
-    player_1['not_yet_tried'] = []
-    player_1['not_yet_tried'].extend(possible_input)
-
-    player_2 = game_functions.set_new_player(settings_values['board_size'], language, player_1['name'])
-    player_2['ships_left'] = settings_values['number_of_ships']
-    player_2['enemy_ships_left'] = settings_values['number_of_ships']
-    player_2['not_yet_tried'] = []
-    player_2['not_yet_tried'].extend(possible_input)
+    player_1 = game_functions.set_new_player(settings_values, language, possible_input)
+    player_2 = game_functions.set_new_player(settings_values, language, possible_input, player_1['name'])
 
     menu.clear_screen()
     ship_list = game_functions.set_ship_distribution(settings_values['number_of_ships'], language)
@@ -80,8 +71,7 @@ def launch(player_1, player_2, settings_values, language):
         if active_player == player_1:
 
             # Ask for player input and check if input is possible
-            player_input = game_functions.ask_input_from(player_1, possible_input,
-                                                         language, settings_values)
+            player_input = game_functions.ask_input_from(player_1, possible_input, language, settings_values)
 
             # Option to return to main settings_menu
             if player_input == "EXIT":

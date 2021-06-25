@@ -10,14 +10,15 @@ def setup_new_board(board_size):
     return board
 
 
-def set_new_player(board_size, language, other_player_name=" "):
+def set_new_player(settings_values, language, possible_input, other_player_name=" "):
     """Creates a new Player with empty board and scores and asks for a name"""
+
     player = {}
     # Prevent completely empty name for legibility
     forbidden_names = ["", " ", "   ", "    ", "     ", "      ", "       ", "        ", "         ",
                        "          ", "           ", "            "]
 
-    # If there is no named player yet, just asks for new name
+    # If there is no named player yet or the other player is a bot, just asks for new name
     if other_player_name == "bot":
         while True:
             player['name'] = str(input(f"  {language['name_human_player']}: "))
@@ -56,10 +57,15 @@ def set_new_player(board_size, language, other_player_name=" "):
                 menu.clear_screen()
                 print(f"  {language['name_player_error']}")
 
-    # Set up a new empty personal board, new guesses board and empty list of tried fields
+    # Set up a new empty personal board, new guesses board and a list of all he fields that have not been tried yet
+    # And save how many ships both player have
 
-    player['board'] = setup_new_board(board_size)
-    player['guesses'] = setup_new_board(board_size)
+    player['board'] = setup_new_board(settings_values['board_size'])
+    player['guesses'] = setup_new_board(settings_values['board_size'])
+    player['ships_left'] = settings_values['number_of_ships']
+    player['enemy_ships_left'] = settings_values['number_of_ships']
+    player['not_yet_tried'] = []
+    player['not_yet_tried'].extend(possible_input)
 
     return player
 
@@ -79,7 +85,6 @@ def set_ship_distribution(number_of_ships, language):
     carrier = {'name': language['carrier'], 'size': 5, 'symbol': "Car"}
 
     # Create a list of the ships based on how many there are
-
     if number_of_ships == 3:
         ship_list = [battleship1, submarine1, patrol_boat1]
 
@@ -169,7 +174,8 @@ def ship_placement(player, possible_input, ship_list, language):
                 # Ask where the front of the ship should be placed
                 input_ship_front = str(
                     input(
-                        f"  {language['your']} {ship['name']} {language['is']} {ship['size']} {language['field_big_where_to_start']}? ")).upper()
+                        f"  {language['your']} {ship['name']} {language['is']} {ship['size']} "
+                        f"{language['field_big_where_to_start']}? ")).upper()
 
                 # Check if field exist
                 if input_ship_front not in possible_input:
@@ -387,7 +393,6 @@ def place_ship_down(player, ship, input_ship_front, input_ship_back):
 
 
 def ask_input_from(player, possible_input, language, settings_values):
-    flag = False
     """Ask for player input and checks against list of possible inputs and already tried"""
     drawing_utils.draw_boards(player, language)
     print("\n")
@@ -396,13 +401,12 @@ def ask_input_from(player, possible_input, language, settings_values):
         try:
             if settings_values['countdown_on']:
                 player_input = counterFileNeu.main(player, language)
-                flag = True
 
             else:
                 player_input = str(input(f"  {language['what_is_your_next_play']}: ")).upper()
 
             if player_input == "EXIT":
-                break
+                return player_input
             if player_input in possible_input:
                 if player_input not in player['not_yet_tried']:
                     drawing_utils.draw_boards(player, language)
@@ -486,12 +490,12 @@ def update_boards(active_player, other_player, player_input, language):
     # Also check if any part of the ship is still alive
     # If pvp game
     if not bot_turn:
-        drawing_utils.draw_boards(active_player, language)
-
         if last_target == "water":
+            drawing_utils.draw_boards(active_player, language)
             print("\n  " + random.choice(language['miss_phrases']))
 
         elif any(last_target in row for row in other_player['board']):
+            drawing_utils.draw_boards(active_player, language)
             print(f"\n  {random.choice(language['hit_phrases'])}. {language['you_ve_hit_an_enemy']}")
 
         # If no part of the ship is left it reduces the number of ship of the enemy by one
@@ -505,11 +509,12 @@ def update_boards(active_player, other_player, player_input, language):
 
     # If pve game
     else:
-        drawing_utils.draw_boards(other_player, language)
         if last_target == "water":
+            drawing_utils.draw_boards(other_player, language)
             print(f"\n  {active_player['name']} {language['shot_into_water']} {player_input}")
 
         elif any(last_target in row for row in other_player['board']):
+            drawing_utils.draw_boards(other_player, language)
             print(f"\n  {active_player['name']} {language['hit_your']} {last_target_name} {language['hit_your_2']}")
             active_player['current_target'].append(player_input)
 
@@ -522,6 +527,7 @@ def update_boards(active_player, other_player, player_input, language):
                     active_player['possible_target'].remove(x)
             active_player['current_target'] = []
 
+            drawing_utils.draw_boards(other_player, language)
             print(f"\n  {active_player['name']} {language['destroyed_your']} {last_target_name} {language['sunk']}")
 
     input(f"  {language['press_enter_to_continue']}")
@@ -548,8 +554,8 @@ def bot_player_input(bot):
             # Level normal: bot shoots at random until it hits, then hunts close to hit
             else:
                 next_shot = []
-                # If there is no unkilled target in last_shot but there are still unkilled ships that where hit
-                # Bot choses randomly one of the list as the next target to seek
+                # If there is no alive target in last_shot but there are still alive ships that where hit
+                # Bot chooses randomly one of the list as the next target to seek
                 if bot['current_target'] == [] and bot['possible_target'] != []:
                     bot['current_target'].append(random.choice(bot['possible_target']))
 
@@ -637,23 +643,6 @@ def bot_player_input(bot):
             continue
 
 
-# Diese Funktion greift ein zufälliges Schiff an
-def random_ship_attac(max):
-    from random import randint
-    # max ist das äußere Ende des Spielfeldes z.B 10 * 10
-    # Zufällige int Werte
-    y = randint(1, max)
-    x = randint(1, max)
-
-    # Umwandeln von int zu einem Buchstaben für 'Y'
-    y = chr(y + 64)
-
-    # Output bestehend aus Buchstabe und Zahla
-    output = y + str(x)
-    print(output)
-    return output
-
-
 def smart_random_shot(bot):
     """Check what the smallest player ship is and looks for the ideal hunting grid accordingly"""
 
@@ -697,36 +686,36 @@ def smart_random_shot(bot):
         for y in range(len(bot['guesses'])):
             for x in range(len(bot['guesses'])):
                 if bot['guesses'][y][x] == "0":
-                    if (x % 3 == 0):
-                        if (y % 3 == 0):
+                    if x % 3 == 0:
+                        if y % 3 == 0:
                             hunting_grid_0_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_0_down.append(chr(65 + y) + str(x + 1))
-                        elif (y % 3 == 1):
+                        elif y % 3 == 1:
                             hunting_grid_1_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_1_down.append(chr(65 + y) + str(x + 1))
-                        elif (y % 3 == 2):
+                        elif y % 3 == 2:
                             hunting_grid_2_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_2_down.append(chr(65 + y) + str(x + 1))
 
-                    elif (x % 3 == 1):
-                        if (y % 3 == 0):
+                    elif x % 3 == 1:
+                        if y % 3 == 0:
                             hunting_grid_1_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_2_down.append(chr(65 + y) + str(x + 1))
-                        elif (y % 3 == 1):
+                        elif y % 3 == 1:
                             hunting_grid_2_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_0_down.append(chr(65 + y) + str(x + 1))
-                        elif (y % 3 == 2):
+                        elif y % 3 == 2:
                             hunting_grid_0_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_1_down.append(chr(65 + y) + str(x + 1))
 
-                    elif (x % 3 == 2):
-                        if (y % 3 == 0):
+                    elif x % 3 == 2:
+                        if y % 3 == 0:
                             hunting_grid_2_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_1_down.append(chr(65 + y) + str(x + 1))
-                        elif (y % 3 == 1):
+                        elif y % 3 == 1:
                             hunting_grid_0_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_2_down.append(chr(65 + y) + str(x + 1))
-                        elif (y % 3 == 2):
+                        elif y % 3 == 2:
                             hunting_grid_1_up.append(chr(65 + y) + str(x + 1))
                             hunting_grid_0_down.append(chr(65 + y) + str(x + 1))
 

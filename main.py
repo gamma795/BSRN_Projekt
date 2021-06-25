@@ -4,11 +4,8 @@ import pvp_game
 import menu
 
 # Settings defaults values
-# could import statistic from existing file instead if we implement this feature
 language = languages.deutsch
 settings_values = {'board_size': 10, 'number_of_ships': 5, 'bot_difficulty': "normal", 'countdown_on': True}
-player_1 = {'name': "Player 1", 'score': 0}
-player_2 = {'name': "Player 2", 'score': 0}
 
 # Start settings_menu
 menu.clear_screen()
@@ -27,13 +24,13 @@ while True:
 
             # Start game against bot
             if number_of_human_players == 1:
-                pve_game.launch(player_1, player_2, settings_values, language)
+                pve_game.launch(settings_values, language)
                 menu.show_main_menu(language)
                 print("\n")
 
             # Start game against human
             elif number_of_human_players == 2:
-                pvp_game.launch(player_1, player_2, settings_values, language)
+                pvp_game.launch(settings_values, language)
                 menu.show_main_menu(language)
                 print("\n")
 
@@ -54,6 +51,7 @@ while True:
         # Leave game
         elif main_menu_input == 3:
             menu.clear_screen()
+            menu.leave_game(language)
             print(f"  {language['bye']}\n")
             input()
             exit()
