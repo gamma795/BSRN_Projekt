@@ -62,7 +62,6 @@ def launch(settings_values, language):
 
     # bot places its ship randomly
     bot = game_functions.random_ship_placement(bot, possible_input, ship_list, language)
-    print(f"  {bot['name']} {language['placed_their_ships']}.\n")
     player = game_functions.choose_ship_placement_methode(player, possible_input, ship_list, language)
 
     # Choose starting player randomly
