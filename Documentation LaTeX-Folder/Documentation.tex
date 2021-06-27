@@ -1,0 +1,242 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{url}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{svg}
+
+\title{Abgabe des Werkstück A in Betriebssysteme und Rechnernetze : Schiffe-Versenken}
+\author{Pascal Lupo, Gamachu Tufa, Jean-Gabriel Hanania}
+\date{\today}
+
+% Einstellung von Kopf- und Fußzeile
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{SS2021}
+\lhead{Pascal Lupo, Gamachu Tufa, Jean-Gabriel Hanania}
+\lfoot{Abgabe des Werkstück A in BS{\&}RN}
+\rfoot{Seite \thepage\ von \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.5pt}
+
+% Farben für die Darstellung von Quellcode
+\definecolor{codedarkgrey}{rgb}{0.2,0.2,0.2}
+\definecolor{codelightgrey}{rgb}{0.5,0.5,0.5}
+\definecolor{backgroundcolour}{rgb}{0.95,0.95,0.95}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backgroundcolour},
+    commentstyle=\color{codelightgrey},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{black},
+    stringstyle=\color{codedarkgrey},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+% Paragrafeneinzuck entfernen
+\setlength{\parindent}{0em}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} % Damit erste Seite weder Fuß- noch Kopfzeile hat
+
+% Zusammenfassung/Abstract
+\begin{abstract}
+    In dem vorliegenden Dokument wird beschrieben, wie das Spiel Schiffe-Versenken in Python programmiert wurde. Die größeren Herausforderungen dieses Projektes werden beschrieben. Es wird vor allem auf dem Aufbau und die Darstellung des Spieles, die Künstliche Intelligenz mit verschiedenen Schwierigkeitsstufen für das Spiel gegen dem Computer und das Einbauen einer Zeitbegrenzung für jeden Zug eingegangen.
+\end{abstract}
+
+% Einleitung
+\section*{}
+    Im Rahmen des Werkstück A des Moduls Betriebssysteme und Rechnernetze SS2021 wurde das Spiel Schiffe-Versenken in Python programmiert. Schiffe-Versenken ist ein Spiel, dass üblicher Weise mit Stift und Papier gespielt wird, in dem jeder Spieler seine ''Schiffe'' auf einen verdecktem Spielbrett verteilen. Die Spieler ''schießen'' dann abwechselnd auf Felder des gegnerischen Spielbrettes, bis einer alle Schiffe des Gegners aufgedeckt und damit gewonnen hat .
+
+
+\section{Aufbau des Spieles}
+    Die erste Herausforderung dieses Projektes ist es, einen sinnvollen Aufbau des Spieles und eine Klare Darstellung zu finden, mit der jederzeit ersichtlich ist, was der Spielstand ist, welcher Spieler dran ist, wohin schon geschossen wurde und welche Möglichkeiten noch offen stehen.
+
+\subsection{Speichern des Spielstandes}
+    Zuerst ist es nötig alle wichtigen Informationen zu erkennen und eine Speichermethode zu wählen. Für das Spiel im Allgemein ist es sinnvoll, die Standardwerte der Einstellungen zu Speichern, z.B. die Größe der Spielfelder und die Anzahl an Schiffe die jeder Spieler besitzen soll. Dazu wird in Python ein sogenanntes Dictionary hergestellt. Das ermöglicht ein schnelles und übersichtliches Aufrufen der eingespeicherten Werte mit einem eindeutig genannten Schlüssel. In diesem Fall werden in \verb$settings_values['board_size']$ die Spielfeldgröße 10 und in \verb$settings_values['number_of_ships']$ die Anzahl 5 gespeichert, was die üblichen Werte dieses Spieles sind. Bei dem Start eines neuen Spieles wird dann basierend auf diese Einstellungen eine List aller möglichen Felder geschrieben (Listing \ref{lst:possible input}). Mit dieser Liste lässt sich jede Feldeingabe der Spieler leicht abgleichen um Fehler abzufangen.
+\begin{lstlisting}[language=Python, caption = Herstellung einer Liste allen möglichen Felder, label=lst:possible input]
+ possible_input = []
+ for y in range(settings_values['board_size']):
+    for x in range(settings_values['board_size']):
+        possible_input.append(chr(65 + y) + str(x + 1))
+\end{lstlisting}
+    Jeder Spieler bekommt dann auch ein Python-Dictionary. In diesen werden alle wichtige Informationen zum Spieler und sein Spielstand gespeichert, d. h.:
+\setlist{}%nolistsep} % Wenn wir denn Abstand entfernen wollen
+\begin{itemize}
+\itemsep0em
+  \item Den vom Spieler ausgesuchtem Name
+  \item Eine Tabelle, auf der die Schiffe platziert und die Schüsse des Gegners eingespeichert werden
+  \item Ein Tabelle der versuchten Schüsse
+  \item Die Anzahl an Schiffe die er und sein Gegner übrig haben
+  \item Eine Liste der möglichen Felder, aus der nach und nach die Felder entfernt werden, auf denen der Spieler feuert
+\end{itemize}
+
+\subsection{Darstellung des Spieles}
+    Jeder Spieler hat zwei Tabellen, in denen sein aktuellen Spielstand gespeichert ist.
+
+\begin{figure}[H]
+    \begin{subfigure}{0.50\textwidth}
+    \centering
+    \includesvg[width=0.40\textwidth]{./Anzeige/Player Board.svg}
+    \caption{Spielfeld}
+    \label{fig:board}
+    \end{subfigure}
+    \begin{subfigure}{0.50\textwidth}
+    \centering
+    \includesvg[width=0.40\textwidth]{./Anzeige/Player Guesses.svg}
+    \caption{Schussversuche}
+    \label{fig:guesses}
+\end{subfigure}
+\caption{Beispiel eines Spielstandes, das in Tabellen eines Spielers gespeichert ist}
+\label{fig:Boards}
+\end{figure}
+
+\par
+    In der ersten Tabelle (Abbildung \ref{fig:board}) wird die Position und der Zustand der eigenen Schiffe. Diese werden mit einem einzigartigen Kürzel bezeichnet um sie von einander unterscheiden zu können (bspw. Su1 für Submarine 1). An den Schiffteilen, die der Gegner schon getroffen hat, wird \verb$_Hit$ angefügt.
+\par
+    In der zweiten Tabelle (Abbildung \ref{fig:guesses}) werden die Schussversuche gespeichert. Das Kürzel WG (Wrong Guess) makiert die Schüsse die, die verfehlt haben und CG (Correct Guess) steht für die Felder wo ein gegnerisches Schiff getroffen wurde.\newline
+
+\par
+    Daraus wird dann ein Bauplan hergestellt. In diesem werden nicht nur die Daten aus den zwei Tabelle eingefügt, sondern auch die Abstände, die bei dem Ergebnis angezeigt werden sollen, die Beschriftung der Zeilen und Spalten und die Linie, die das Raster des Spielfeldes darstellen.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=.8\textwidth]{./Anzeige/Blueprint.svg}
+    \caption{Bauplanergebnis aus dem Spielstand von Abbildung \ref{fig:Boards}}
+    \label{fig:blueprint}
+\end{figure}
+
+\par
+    Zum einfügen der verschiedenen Zeichen an der richtigen Stelle, wird für jede im Spielfeld liegenden (x,y) Koordinaten Combination mithilfe der Modulo 2 Funktion berechnet ob die Koordinaten gerade oder ungerade Zahlen sind. In dem nachfolgenden Listing \ref{lst:Grid example} wird bspw. für jede Spalte die im richtigem Bereich liegt und ein ungerade x-Koordinate besitzt eine Vertikale Linie eingefügt.
+
+\begin{lstlisting}[language=Python, caption =Beispiel zum Einfügen von bestimmten Teilen des Spielfeldrasters, label=lst:Grid example]
+for y in range(blueprint_height):
+    for x in range(blueprint_width):
+        # Filling in the vertical walls for both boards. They all have odd x coordinate
+            if x % 2 == 1 and ((2 < x < (len(player['board']) * 2 + 4)) or (
+                    (len(player['board']) * 2 + 4 + board_spacing) < x < blueprint_width)):
+                blueprint[y][x] = "|"
+\end{lstlisting}
+\par
+    Der Zwischenschritt des Bauplanes ermöglicht eine höher Kontrolle der Anzeige; z.B. liegen alle Schiffe über mindestens eine Linie des Rasters und würden dadurch in der Anzeige unterbrochen sein. Das würde für Unklarheiten sorgen sobald zwei Schiffe aneinander liegen würden. In dem Bauplan wird für jede Linie aus dem Spielfeld nachgeschaut, ob in den dazu angrenzenden Felder Teile eines gleichen Schiffes liegen. Damit kann dieses Zeichen gegebenfalls dann mit ein einem passendem Schiffzeichen ersetzt werden. Da bspw. in der Abbildung \ref{fig:blueprint} die Felder A1 und B1 beide in der Spieler Tabelle mit ''Pa1''versehen sind, wird die Linie zwischen diesen Felder mit einem Schiffteil ersetzt.
+
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.55\textwidth]{./Anzeige/Anzeigeergebnis.svg}
+    \caption{Anzeigeergebnis}
+    \label{fig:Result}
+\end{figure}
+    Die Abbildung \ref{fig:Result} ist das im Spiel angezeigt Ergebnis aus dem Spielstand der Abbildung \ref{fig:Boards}. Zum Darstellen der Schiffe und der Raster Linien kommen die sogannten "Box-drawing character"\footnote{\url{https://en.wikipedia.org/wiki/Box-drawing_character}} des Unicode Standards im Einsatz.
+
+\section{Counter}
+\subsection{Aufgabe der Funktion}
+\par
+    Die Funktion ist dafür da, um die Zeit der Benutzereingabe zeitlich zu begrenzen. Sobald der Spieler aufgefordert wir ein gegnerisches Feld zu beschießen,  läuft ein Countdown runter, der aufzeigt wie viel Zeit noch übrig geblieben ist. Wir haben uns dafür entschieden einen Zeitraum von 15 Sekunden festzulegen. Sollte der Spieler innerhalb der gegebenen Zeit ein gegnerisches Schiff beschießen, wird der Countdown beendet und das Spiel fortgesetzt, in dem der andere Spieler nun aufgefordert wird ein gegnerisches Feld zu beschießen. Sollte der Spieler bis Ablauf der Zeit noch kein Feld ausgewählt haben, wird dem Spieler angezeigt, dass seine Zeit abgelaufen ist und er nun die Enter-Taste drücken soll. Durch das Drücken der Enter-Taste wird ein zufälliges Feld beschossen und so dass, das Spiel fortgesetzt.
+Diese Funktion wird jedes Mal aufgerufen, wenn der Spieler ein Feld beschießen muss.
+\subsection{Problemstellung}
+\par
+    Ein Problem der Aufgabenstellung war, dass zwei Prozesse gleichzeitig laufen müssen. Zum einen muss der Countdown von 15 bis 0 runterlaufen, zum anderen muss gleichzeitig auf einen Benutzereingabe gewartet werden. Zu beginn hatte ich das Problem, dass der Countdown erst gestartet ist, nach dem es eine Benutzereingabe gab. Dies machte den Countdown jedoch unbrauchbar, da es parallel laufen muss.
+\subsection{Lösungsversuch}
+
+\par
+    Um nun mehrere Prozesse gleichzeitig laufen zu lassen musste eine andere Lösung her. Durch etwas Recherche fand ich einige Informationen zu "threads". Diese sollten einen parallelen Ablauf von mehreren Prozessen möglich machen. Die Datei ist wie folgt aufgebaut.\\\\Es gibt die ask()-Funktion. Diese Funktion nimm die Benutzereingabe auf und gibt sie später, am Ende zurück.\\Die Funktion exit(msg). Wird aufgerufen, wenn eine Benutzereingabe erfolgt ist oder wenn keine Eingabe erfolgt ist. In beiden Fällen gibt die Funktion einen Textwert zurück, der als Parameter gegeben werden muss. Es wird beispielsweise ausgegeben, dass die Zeit abgelaufen ist und nun ein zufälliges Feld beschossen wird oder es wird ausgegeben, auf welches Feld geschossen wurde.\\Die Funktion countdown() gibt die verbliebene Zeit an. Innerhalb der Funktion ist eine Endlosschleife die läuft, bis der Stop-Wert null erreicht wird. Der Wert beginnt bei 15 und wird  jede Runde, mit einer  Verzögerung von 2 Sekunden um den Wert 2 verringert. Bei jeden Schleifendurchgang wird die aktuell verbliebene Zeit ausgegeben. Wichtig  ist hierbei zusagen, dass in der Gesamten zeit eine Benutzereingabe parallel möglich ist.\\Die Funktion close\_if\_time\_pass(seconds) wird als letztes aufgerufen und gibt aus, dass die Zeit abgelaufen ist.\\Alle diese Funktionen werden in der Wichtigsten von allen, der main() Funktion, aufgerufen.\\\\In der Funktion main(), habe ich, wie bereits erwähnt, mit "threads"\\gearbeitet. Ich habe dazu 2 "threads" erstellt. Der erste ist dafür da, um nach Ablauf der Zeit (in unserem Fall 15 Sekunden) auszugeben, dass die Zeit abgelaufen ist und nun vom Spiel selbst, ein zufälliges Feld ausgewählt wird. Der zweite "thread" ist dazu da, den Countdown zu starten.\\Sobald die "threads" gestartet werden, wird die Funktion ask() aufgerufen, welche auf die Benutzereingabe wartet. Der Rückgabewert aus der Funktion ask(), wird gespeichert in der Variable user\_input. Es wird nach Ablauf der Zeit geprüft, ob die Variable keinen Wert hat. Sollte dies der Fall sein, wird ein zufälliges Feld beschossen, mit der Funktion random\_ship\_attac, aus der Date gamefunctions. Sollte die Variable jedoch einen Wert haben, wird dieser Wert als Rückgabewert genutzt und somit das eingegeben Feld beschossen.
+
+
+\begin{lstlisting}[language=Python, caption=Main Funktion des Countdowns]
+def main(player, language):
+    global start_sign, check
+
+    # bool variables that are needed to start
+    start_sign = True
+    check = False
+
+    # define close_if_time_pass as a threading function, 15 as an argument
+    t = threading.Thread(target=close_if_time_pass, args=(15, player, language,))
+    t2 = threading.Thread(target=countdown, args=(language,))
+
+    # start threading
+    t2.start()
+    t.start()
+
+    # ask for input
+    user_input = ask()
+
+    # if there was no user input, the player will attack a random field automatically
+    if len(user_input) < 1:
+        user_input = random.choice(player['not_yet_tried'])
+
+    # bool variables that are needed to stop
+    check = True
+    start_sign = False
+
+    return user_input
+\end{lstlisting}
+
+
+
+\section{PvE Game}
+\subsection{Aufbau des PvE}
+\par
+    Der PvE Modus ist dafür da, dass eine Person gegen einen Bot spielen kann. In diesem Modus kann man außerdem auswählen, ob der Bot mit einer hohen KI oder einer geringen KI ausgestattet werden soll. Diese Einstellung, kann einen sehr guten Gegenspieler oder einen weniger gute Spieler imitieren, was das allgemeine Spielerlebnis abwechslungsreicher macht. Die KI des Bot ist in drei Schwierigkeitsgrade unterteilt ''Einfach'' ,was einen Anfänger imitiert der willkürlich schießt. Dem Schwierigkeitsgrad ''Mittel'', der einen Gelegenheits Spieler imitiert, bzw. einen Spieler der, das Spiel einigermaßen verstanden hat. Und einem Schwierigkeitsgrad ''Schwer'', der einen Profi imitiert, der nach bestimmten Regeln und Taktiken spielt.
+\subsection{Probleme bei der Umsetzung}
+\par
+    Einer der größten Probleme bei der Umsetzung des PvE Modus war es die KI zu integrieren, als Beispiel: Soll der Bot auf die umliegenden Felder schießen, wenn er ein Schiff getroffen hat und nicht einfach weiter zufällig auf das gegnerische Spielfeld schießen. Es hat außerdem auch ziemlich viel Zeit gekostet, sich mit einer Taktik/Algorithmus für den ''Schwer'' Modus auseinanderzusetzen, die es ihm ermöglicht, möglichst wenige Spielzüge zu tätigen um ein Schiff zu versenken, bzw. ein Schiff zu finden/treffen.
+\subsection{Umsetzung}
+\par
+    Bei der Umsetzung gab es auch einige Probleme, es war ziemlich kompliziert die einzelnen Schwierigkeitsgrade einzubauen. Die Lösung war am Ende,dass der Bot im  ''Einfach'' Schwierigkeitsmodus komplett zufällig schießt, ohne irgendwelche Kriterien oder anderes zu beachten, dies erfolgt mit der random.choice Funktion, die auf einer Liste mit allen leeren Feldern ein Zufälliges Feld  auswählt und beschießt. Im ''Mittel'' Schwierigkeitsmodus schießt der Bot zuerst auch Zufällig bis er ein Schiff trifft. Trifft er ein Schiff dann beschießt er nun die anliegenden Felder vorher wird aber gecheckt welche anliegenden Felder noch nicht beschossen wurden und zu der next-shot Liste hinzugefügt, in dieser Liste sind die Felder die als nächstes beschossen werden sollen gespeichert. Falls es beim beschießen der umliegenden Felder wieder zu einem Treffer kommt, dann schaut das Programm, ob die beiden Treffer die gleiche y-Koordinate oder die gleiche x-Koordinate haben. Falls die beiden Treffer die gleiche x-Koordinate haben, dann ist es wahrscheinlich, dass das Schiff horizontal liegt und falls die beiden Treffer die gleiche y-Koordinate haben, dann ist es Wahrscheinlich, dass das Schiff vertikal liegt. Nun Schießt der Bot auf die freien Felder auf der gleichen x-oder-y Koordinate je nach dem. Wenn nun das Schiff versenkt wird, dann fängt der Bot wieder an random zu schießen bis er einen neuen Treffer bekommt. Falls aber die next-shot liste leer ist und kein Schiff versenkt wurde, dann geht, das Programm davon aus, dass es mehrere Schiffe nebeneinander sind bzw. aneinander sind nun sucht es sich Zufällig eines von den Beiden möglichen Schiffen aus und beschießt wieder die umliegenden Felder davon bis es zu einem weiteren Treffer kommt. Beim "Schwer" Schwierigkeitsmodus schießt der Bot nur auf jedes zweite Feld, da das kleinste Schiff 2 Felder lang ist, falls das kleinste Schiff bereits versenkt wurde, dann schießt der Bot nur noch auf jedes dritte Feld. Beim "Schwer" Schwierigkeitsmodus ist dies alles in der smart-random-shot(bot): Funktion definiert. In dieser Funktion wird geprüft, was das kleinste Schiff des Gegners ist und darauf angepasst in verschiedenen Feld Abständen geschossen, in dieser Funktion wird außerdem noch nach verschiedenen Grids geschaut, es wird geschaut welches das kleinste Grid ist und nach dem Schema des Grids geschossen. Grids kann man verstehen als z.B wie beim Schach die schwarzen oder weißen Kästchen die ein bestimmtes Muster zusammen ergeben.
+
+\begin{lstlisting}[language=Python, caption = Herstellung der zwei möglich Grids und deren Vergleich]
+ hunting_grid_00 = []
+ hunting_grid_01 = []
+
+ # Checks every fields, and adds the empty one to the grid its part of
+ for y in range(len(bot['guesses'])):
+     for x in range(len(bot['guesses'])):
+         if bot['guesses'][y][x] == "0":
+             if (y % 2 == 0 and x % 2 == 0) or (y % 2 == 1 and x % 2 == 1):
+                 hunting_grid_00.append(chr(65 + y) + str(x + 1))
+             else:
+                 hunting_grid_01.append(chr(65 + y) + str(x + 1))
+
+ # Finally, it checks which list is the smallest of the 2, and sets it as our hunting grid
+ # One Grid is chosen at random to reduce predicting possibilities
+ hunting_grid = random.choice([hunting_grid_01, hunting_grid_00])
+ if len(hunting_grid) > len(hunting_grid_01):
+     hunting_grid = hunting_grid_01
+ elif len(hunting_grid) > len(hunting_grid_00):
+    hunting_grid = hunting_grid_00
+
+ return random.choice(hunting_grid)
+\end{lstlisting}
+\section{PvP Game}
+\subsection{Aufbau des PvP Modus}
+\par
+    Beim PvP Modus, ist es möglich, dass 2 Personen an einem Gerät gegeneinander spielen können. In dem Modus können beide Spieler einen Namen auswählen und werden daran erinnert, dass sie auf den Bildschirm schauen sollen, wenn sie an der Reihe ist, der Gegenspieler wird im gleichen Moment erinnert wegzuschauen. Der Spieler selbst kann auch auswählen, ob seine Schiffe zufällig gesetzt werden sollen oder ob er sie selbst platzieren will.
+\subsection{Schwierigkeiten und Umsetzung}
+\par
+    Schwierigkeiten gab es bei der Umsetzung des PvP Modus nicht wirklich, die größten Schwierigkeiten waren, dass nicht beide Spielfelder gleichzeitig angezeigt werden sollen und somit der Gegenspieler die Platzierung der eigenen Schiffe sehen könnte, was den Sinn des Spieles kaputt machen würde. Ein weiteres Problem war es, dass der Gegenspieler nicht direkt über seinem Spielzug und Spielfeld in der Konsole, das Spielfeld des anderen sehen soll der vor ihm an der Reihe war. Da ein Löschen der ganzen Konsole sehr umständlich wäre, haben wir dies mit einer clear-screen(): Funktion gelöst, diese Funktion printed 50 leere Zeilen um somit, das Spielfeld des Gegners zumindestens aus der direkt sichtbaren Konsole zu entfernen.
+\end{document}
+
+
