@@ -30,7 +30,7 @@ deutsch = {
 
     # General phrases
     'back': "Zurück",
-    'press_enter_to_continue': "Drücke die Eingabetaste um fortzufahren",
+    'press_enter_to_continue': "Drücken Sie die Eingabetaste um fortzufahren",
     'your_choice': "Ihre Wahl",
     'what_to_do': "Was wollen Sie tun",
 

@@ -651,7 +651,7 @@ def smart_random_shot(bot):
         hunting_grid_00 = []
         hunting_grid_01 = []
 
-        # Checks every fields, and adds the empty one to the girds its part of
+        # Checks every fields, and adds the empty one to the grid its part of
         for y in range(len(bot['guesses'])):
             for x in range(len(bot['guesses'])):
                 if bot['guesses'][y][x] == "0":
@@ -661,10 +661,12 @@ def smart_random_shot(bot):
                         hunting_grid_01.append(chr(65 + y) + str(x + 1))
 
         # Finally, it checks which list is the smallest of the 2, and sets it as our hunting grid
-        if len(hunting_grid_00) < len(hunting_grid_01):
-            hunting_grid = hunting_grid_00
-        else:
+        # One Grid is chosen at random to reduce predicting possibilities
+        hunting_grid = random.choice([hunting_grid_01, hunting_grid_00])
+        if len(hunting_grid) > len(hunting_grid_01):
             hunting_grid = hunting_grid_01
+        elif len(hunting_grid) > len(hunting_grid_00):
+            hunting_grid = hunting_grid_00
 
     # If the smallest ship is already sunk, the next smallest one is 3 field long
     else:

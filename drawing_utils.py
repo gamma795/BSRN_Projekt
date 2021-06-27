@@ -96,8 +96,10 @@ def boards_to_blueprint(player, board_spacing):
                     (2 < x < (len(player['board']) * 2 + 3)) or (
                     (len(player['board']) * 2 + 5 + board_spacing) < x < blueprint_width)):
 
-                if blueprint[y - 1][x][0:3] == blueprint[y + 1][x][0:3] and blueprint[y - 1][x] != "0" and \
-                        blueprint[y - 1][x] != "WG" and blueprint[y - 1][x] != "CG":
+                if (blueprint[y - 1][x][0:3] == blueprint[y + 1][x][0:3]
+                        and blueprint[y - 1][x] != "0"
+                        and blueprint[y - 1][x] != "WG"
+                        and blueprint[y - 1][x] != "CG"):
 
                     if "H" in blueprint[y - 1][x] and "H" in blueprint[y + 1][x]:
                         blueprint[y][x] = "▒▒▒"
