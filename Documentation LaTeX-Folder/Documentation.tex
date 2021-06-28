@@ -14,7 +14,7 @@
 \usepackage{svg}
 \usepackage{wrapfig}
 
-\title{Dokumentation zum Werkstück A in Betriebssysteme und Rechnernetze : Schiffe-Versenken}
+\title{Dokumentation zum Werkstück A in ,,Betriebssysteme und Rechnernetze'': Schiffe-Versenken}
 \author{Pascal Lupo, Gamachu Tufa, Jean-Gabriel Hanania}
 \date{\today}
 
@@ -67,47 +67,47 @@
 
 % Zusammenfassung/Abstract
 \begin{abstract}
-    In dem vorliegenden Dokument wird beschrieben, wie das Spiel Schiffe-Versenken in Python programmiert wurde. Die größeren Herausforderungen dieses Projektes werden dargestellt. Es wird vor allem auf dem Aufbau und die Darstellung des Spieles, die Künstliche Intelligenz mit verschiedenen Schwierigkeitsstufen für das Spiel gegen dem Computer und das Einbauen einer Zeitbegrenzung für jeden Zug eingegangen.
+    In dem vorliegenden Dokument wird beschrieben, wie das Spiel Schiffe-Versenken in Python programmiert wurde. Die größeren Herausforderungen dieses Projektes werden dargestellt. Es wird vor allem auf den Aufbau und die Darstellung des Spiels, die künstliche Intelligenz mit verschiedenen Schwierigkeitsstufen für das Spiel gegen den Computer und das Einbauen einer Zeitbegrenzung für jeden Zug eingegangen.
 \end{abstract}
 
 % Einleitung
 \section*{}
-    Im Rahmen des Werkstücks A des Moduls Betriebssysteme und Rechnernetze SS2021 wurde das Spiel Schiffe-Versenken in Python programmiert. Schiffe-Versenken ist ein Spiel, dass üblicher Weise mit Stift und Papier gespielt wird, in dem jeder Spieler seine ''Schiffe'' auf einen verdecktem Spielbrett verteilen. Die Spieler ''schießen'' dann abwechselnd auf Felder des gegnerischen Spielbrettes, bis einer alle Schiffe des Gegners aufgedeckt und damit gewonnen hat .
+    Im Rahmen des Werkstücks A des Moduls Betriebssysteme und Rechnernetze SS2021 wurde das Spiel Schiffe-Versenken in Python programmiert. Schiffe-Versenken ist ein Spiel, das üblicherweise mit Stift und Papier gespielt wird, in dem jeder Spieler seine ,,Schiffe'' auf einem verdeckten Spielbrett verteilt. Die Spieler ,,schießen'' dann abwechselnd auf Felder des gegnerischen Spielbrettes, bis einer alle Schiffe des Gegners aufgedeckt und somit gewonnen hat.
 
 
-\section{Aufbau des Spieles}
-    Die erste Herausforderung dieses Projektes ist es, einen sinnvollen Aufbau des Spieles und eine Klare Darstellung zu finden, mit der jederzeit ersichtlich ist, was der Spielstand ist, welcher Spieler dran ist, wohin schon geschossen wurde und welche Möglichkeiten noch offen stehen.
+\section{Aufbau des Spiels}
+    Die erste Herausforderung dieses Projektes ist es, einen sinnvollen Aufbau des Spiels und eine klare Darstellung zu finden, mit der jederzeit ersichtlich ist, was der Spielstand ist, welcher Spieler am Zug ist, wohin schon geschossen wurde und welche Möglichkeiten noch offen stehen.
 
-\subsection{Speichern des Spielstandes}
-    Zuerst ist es nötig alle wichtigen Informationen zu erkennen und eine Speichermethode zu wählen. Für das Spiel im Allgemein ist es sinnvoll, die Standardwerte der Einstellungen zu Speichern, z.B. die Größe der Spielfelder und die Anzahl an Schiffe die jeder Spieler besitzen soll. Dazu wird in Python ein sogenanntes Dictionary hergestellt. Das ermöglicht ein schnelles und übersichtliches Aufrufen der eingespeicherten Werte mit einem eindeutig genannten Schlüssel. In diesem Fall werden in \verb$settings_values['board_size']$ die Spielfeldgröße 10 und in \verb$settings_values['number_of_ships']$ die Anzahl 5 gespeichert. Das stellt  die üblichen Werte dieses Spieles dar. Diese lassen sich aber nach belieben in den Einstellungen ändern. Bei dem Start eines neuen Spieles wird dann basierend auf diese Einstellungen eine Liste aller möglichen Felder erzeugt (Listing \ref{lst:possible input}). Mit dieser lässt sich jede Feldeingabe der Spieler leicht abgleichen um Fehler abzufangen.
+\subsection{Speichern des Spielstands}
+    Zuerst ist es nötig, alle wichtigen Informationen zu erkennen und eine Speichermethode zu wählen. Für das Spiel im Allgemeinen ist es sinnvoll, die Standardwerte der Einstellungen zu speichern; z. B. die Größe der Spielfelder und die Anzahl an Schiffen, die jeder Spieler besitzen soll. Dazu wird in Python ein sogenanntes Dictionary hergestellt. Das ermöglicht ein schnelles und übersichtliches Aufrufen der eingespeicherten Werte mit einem eindeutig genannten Schlüssel. In diesem Fall werden in \verb$settings_values['board_size']$ die Spielfeldgröße 10 und in \verb$settings_values['number_of_ships']$ die Anzahl 5 gespeichert. Das stellt die üblichen Werte dieses Spiels dar. Diese lassen sich aber nach Belieben in den Einstellungen ändern. Bei dem Start eines neuen Spiels wird dann basierend auf diesen Einstellungen eine Liste aller möglichen Felder erzeugt (Listing \ref{lst:possible input}). Mit dieser lässt sich jede Feldeingabe der Spieler leicht abgleichen, um Fehler abzufangen.
 
-\begin{lstlisting}[language=Python, caption = Herstellung einer Liste allen möglichen Felder, label=lst:possible input]
+\begin{lstlisting}[language=Python, caption = Herstellung einer Liste aller möglichen Felder, label=lst:possible input]
  possible_input = []
  for y in range(settings_values['board_size']):
     for x in range(settings_values['board_size']):
         possible_input.append(chr(65 + y) + str(x + 1))
 \end{lstlisting}
 
-    Jeder Spieler bekommt auch ein Python-Dictionary. In diesen werden alle wichtige Informationen zum Spieler und seinen Spielstand gespeichert, d. h.:
+    Jeder Spieler bekommt auch ein Python-Dictionary. In diesem werden alle wichtigen Informationen zum Spieler und seinem Spielstand gespeichert d. h.:
 
 \setlist{}%nolistsep} % Wenn wir denn Abstand entfernen wollen
 \begin{itemize}
 \itemsep0em
-  \item Den vom Spieler ausgesuchtem Name unter dem Schlüssel \verb$'name'$
-  \item Eine Tabelle, auf der die Schiffe platziert und die Schüsse des Gegners eingespeichert werden bei \verb$'board'$
-  \item Ein Tabelle der versuchten Schüsse bei \verb$'guesses'$
-  \item Die Anzahl an Schiffe die er und sein Gegner übrig haben bei \verb$'ships_left'$ und \verb$'enemy_ships_left'$
-  \item Eine Liste der möglichen Felder, aus der nach und nach die Felder entfernt werden, auf denen der Spieler feuert bei \verb$'not_yet_tried'$
+  \item den vom Spieler ausgesuchten Namen unter dem Schlüssel \verb$'name'$
+  \item eine Tabelle, auf der die Schiffe platziert und die Schüsse des Gegners eingespeichert werden (\verb$'board'$)
+  \item ein Tabelle der versuchten Schüsse (\verb$'guesses'$)
+  \item die Anzahl an Schiffen die er und sein Gegner übrig haben (\verb$'ships_left'$ und \verb$'enemy_ships_left'$)
+  \item eine Liste der möglichen Felder, aus der nach und nach die Felder entfernt werden, auf die der Spieler feuert (\verb$'not_yet_tried'$)
 \end{itemize}
 
 \subsection{Speicherung der Schiffpositionen}
-    Am Anfang des Spieles wird eine List von Schiffen ausgesucht basierend auf die eingestellte Anzahl an Schiffen pro Spieler. Diese Listen sind vorgefertigt und jeder Eintrag darin ist ein Python-Dictionary, das ein ein bestimmtes Schiff Darstellen soll. Dort steht wie das Schiff heißt, mit welchem Kürzel es in der Tabelle repräsentiert wird und wie lang es ist.\\
+    Am Anfang des Spiels wird eine Liste von Schiffen basierend auf der eingestellten Anzahl an Schiffen pro Spieler ausgesucht. Diese Listen sind vorgefertigt und jeder Eintrag darin ist ein Python-Dictionary, das ein bestimmtes Schiff darstellen soll. Dort steht, wie das Schiff heißt, mit welchem Kürzel es in der Tabelle repräsentiert wird und wie lang es ist.\\
 
 \par
-    Jeder Spieler entscheidet dann, ob er seine Schiffe selber platzieren möchte oder ob Diese zufällig verteilt werden sollen. Wählt er die erste Option wird er dazu aufgefordert ein Feld auszusuchen auf der die Spitze des Schiffes liegen soll. Das Programm berechnet dann ob an dieser Stelle genug Platz ist und gibt eine Liste möglicher Felder zurück, wo das andere Ende des Schiffes liegen kann. Nur wenn der Spieler für beides passende Werte eingibt, wird das Schiff mit dem passendem Kürzel in der Tabelle \verb$'board'$ des Spielers eingetragen. Die Zufallsverteilung erfolgt ähnlich. Jedes Wert wird nur zufällig aus denn Listen gültiger eingaben ausgesucht.
+    Jeder Spieler entscheidet dann, ob er seine Schiffe selber platzieren möchte oder ob diese zufällig verteilt werden sollen. Wählt er die erste Option, wird er dazu aufgefordert, ein Feld auszusuchen, auf dem die Spitze des Schiffes liegen soll. Das Programm berechnet dann, ob an dieser Stelle genug Platz ist und gibt eine Liste möglicher Felder zurück, auf den das andere Ende des Schiffes liegen kann. Nur wenn der Spieler beide Werte richtig eingibt, wird das Schiff mit dem passendem Kürzel in der Tabelle \verb$'board'$ des Spielers eingetragen. Die Zufallsverteilung erfolgt ähnlich. Jeder Wert wird nur zufällig aus den Listen gültiger Eingaben ausgesucht.
 
 \subsection{Darstellung des Spieles}
-    Jeder Spieler hat zwei Tabellen, in denen sein aktuellen Spielstand gespeichert ist.
+    Jeder Spieler hat zwei Tabellen, in denen sein aktueller Spielstand gespeichert ist.
 
 \begin{figure}[H]
     \begin{subfigure}{0.50\textwidth}
@@ -127,10 +127,10 @@
 \end{figure}
 
 \par
-    In der ersten Tabelle (Abbildung \ref{fig:board}) stehen die Position und der Zustand der eigenen Schiffe. Diese werden mit einem einzigartigen Kürzel bezeichnet um sie von einander unterscheiden zu können (bspw. Su1 für Submarine 1 und Pa1 für Patrol Boat 1). An den Schiffteilen, die der Gegner schon getroffen hat, wird \verb$_Hit$ angefügt. In der zweiten Tabelle (Abbildung \ref{fig:guesses}) werden die Schussversuche gespeichert. Das Kürzel WG (Wrong Guess) makiert die Schüsse, die verfehlt haben und CG (Correct Guess) steht für die Felder wo ein gegnerisches Schiff getroffen wurde.\newline
+    In der ersten Tabelle (Abbildung \ref{fig:board}) stehen die Positionen und der Zustand der eigenen Schiffe. Diese werden mit einem einzigartigen Kürzel bezeichnet, um sie voneinander unterscheiden zu können (bspw. Su1 für Submarine 1 und Pa1 für Patrol Boat 1). An die Schiffsteile, die der Gegner schon getroffen hat, wird \verb$_Hit$ angefügt. In der zweiten Tabelle (Abbildung \ref{fig:guesses}) werden die Schussversuche gespeichert. Das Kürzel WG (Wrong Guess) makiert die Schüsse, die verfehlt worden sind und CG (Correct Guess) steht für die Felder, auf denen ein gegnerisches Schiff getroffen wurde.\newline
 
 \par
-    Daraus wird dann ein Bauplan hergestellt. In diesem werden nicht nur die Daten aus den zwei Tabelle eingefügt, sondern auch die Abstände, die bei dem Ergebnis angezeigt werden sollen, die Beschriftung der Zeilen und Spalten und die Linie, die das Raster des Spielfeldes darstellen.
+    Daraus wird dann ein Bauplan erstellt. In diesem werden nicht nur die Daten aus den zwei Tabellen eingefügt, sondern auch die Abstände, die bei dem Ergebnis angezeigt werden sollen, die Beschriftung der Zeilen und Spalten und die Linie, die das Raster des Spielfeldes darstellen.
 
 \begin{figure}[H]
     \centering
@@ -140,7 +140,7 @@
 \end{figure}
 
 \par
-    Zum einfügen der verschiedenen Zeichen an der richtigen Stelle, wird für jede im Spielfeld liegenden (x,y) Koordinaten Combination mithilfe der Modulo 2 Funktion berechnet ob die Koordinaten gerade oder ungerade Zahlen sind. In dem nachfolgenden Listing \ref{lst:Grid example} wird bspw. für jedes Feld das im richtigem Bereich liegt und ein ungerade x-Koordinate besitzt eine Vertikale Linie eingefügt.
+    Zum Einfügen der verschiedenen Zeichen an der richtigen Stelle werden für alle im Spielfeld liegenden (x,y)-Koordinaten Kombinationen mithilfe der Modulo 2 Funktion berechnet, ob die Koordinaten gerade oder ungerade Zahlen sind. In dem nachfolgenden Listing \ref{lst:Grid example} wird bspw. für jedes Feld, das im richtigen Bereich liegt und ein ungerade x-Koordinate besitzt, eine vertikale Linie eingefügt.
 
 \begin{lstlisting}[language=Python, caption =Beispiel zum Einfügen von bestimmten Teilen des Spielfeldrasters, label=lst:Grid example]
 for y in range(blueprint_height):
@@ -152,7 +152,7 @@ for y in range(blueprint_height):
 \end{lstlisting}
 
 \par
-    Der Zwischenschritt des Bauplanes ermöglicht eine höher Kontrolle der Anzeige; z.B. liegen alle Schiffe durch ihre Länge über mindestens eine Linie des Rasters und würden dadurch in der Anzeige unterbrochen sein. Das würde für Unklarheiten sorgen sobald zwei Schiffe aneinander liegen würden. In dem Bauplan wird für jede Linie aus dem Spielfeld nachgeschaut, ob in den dazu angrenzenden Felder Teile eines gleichen Schiffes liegen. Damit kann dieses Zeichen gegebenenfalls dann mit ein einem passendem Schiffzeichen ersetzt werden. Da bspw. in der Abbildung \ref{fig:blueprint} die Felder A1 und B1 beide in der Spieler Tabelle mit ''Pa1''versehen sind, wird die Linie zwischen diesen Felder mit einem Schiffteil ersetzt.
+    Der Zwischenschritt des Bauplans ermöglicht eine höher Kontrolle der Anzeige; z. B. liegen alle Schiffe durch ihre Länge über mindestens einer Linie des Rasters und würden dadurch in der Anzeige unterbrochen sein. Das würde für Unklarheiten sorgen, sobald zwei Schiffe aneinander liegen würden. Im Bauplan wird für jede Linie aus dem Spielfeld geprüft, ob in den dazu angrenzenden Feldern Teile eines gleichen Schiffes liegen. Damit kann dieses Zeichen ggf. dann mit einem passenden Schiffszeichen ersetzt werden. Da bspw. in der Abbildung \ref{fig:blueprint} die Felder A1 und B1 beide in der Spieler-Tabelle mit ''Pa1''versehen sind, wird die Linie zwischen diesen Felder mit einem Schiffsteil ersetzt.
 
 \begin{figure}[H]
     \centering
@@ -161,28 +161,29 @@ for y in range(blueprint_height):
     \label{fig:Result}
 \end{figure}
 
-    Die Abbildung \ref{fig:Result} ist das im Spiel angezeigt Ergebnis aus dem Spielstand der Abbildung \ref{fig:Boards}. Zum Darstellen der Schiffe und der Raster Linien kommen die sogannten ''Box-drawing character''\footnote{\url{https://en.wikipedia.org/wiki/Box-drawing_character}} des Unicode Standards im Einsatz. Bei der Ausgabe wird über Spielfelder angezeigt, welcher Spieler dran ist und wie viele Schiffe er und sein Gegner noch besitzen. All diese Werte lassen sich aus dem jeweiligen Python-Dictionary vom aktiven Spieler auslesen.
+    Die Abbildung \ref{fig:Result} ist das im Spiel angezeigte Ergebnis aus dem Spielstand der Abbildung \ref{fig:Boards}. Zum Darstellen der Schiffe und der Rasterlinien kommen die sogenannten ''Box-drawing character''\footnote{\url{https://en.wikipedia.org/wiki/Box-drawing_character}} des Unicode Standards zum Einsatz. Bei der Ausgabe wird über die Spielfelder angezeigt, welcher Spieler dran ist und wie viele Schiffe er und sein Gegner noch besitzen. All diese Werte lassen sich aus dem jeweiligen Python-Dictionary vom aktiven Spieler auslesen.
 
 
 \section{PvE Game}
-       Der PvE Modus ist dafür da, dass eine Person gegen einen computergesteuertem Spieler - einen sogenannte Bot - spielen kann. In diesem Modus kann man außerdem auswählen, wie gut die künstliche Intelligenz des Computer sein soll. Diese Einstellung soll Gegenspieler unterschiedlicher Level imitieren können, und damit das allgemeine Spielerlebnis abwechslungsreicher machen. Die KI des Bots ist in drei Schwierigkeitsgrade unterteilt: ''Einfach'', ''Mittel'' und ''Schwer''.
+       Der PvE-Modus ist dafür da, dass eine Person gegen einen computergesteuerten Spieler, einen sogenannte Bot, spielen kann. In diesem Modus kann man außerdem auswählen, wie gut die künstliche Intelligenz des Computers sein soll. Diese Einstellung soll Gegenspieler unterschiedlicher Stärken imitieren können und damit das allgemeine Spielerlebnis abwechslungsreicher machen. Die KI des Bots ist in drei Schwierigkeitsgrade unterteilt: ''Einfach'', ''Mittel'' und ''Schwer''.
 
 \subsection{Probleme bei der Umsetzung}
-    Einer der größeren Probleme bei der Umsetzung des PvE Modus war es, eine auf dem Level des Spieler anpassbare künstliche Intelligenz zu integrieren. Wie sollte die Abstufen der verschiedenen Schwierigkeitslevel aussehen? Soll der Bot auf die umliegenden Felder schießen, wenn er ein Schiff getroffen hat und nicht einfach weiter zufällig auf das gegnerische Spielfeld schießen? Wie kann der Computer im schwerstem Modus taktisch vorgehen, um möglichst wenige Spielzüge zu tätigen um ein Schiff zu finden und versenken, wenn der Spieler den ''Schwer'' Modus einstellt?
+    Eins der größeren Probleme bei der Umsetzung des PvE-Modus war es, eine auf dem Level des Spielers anpassbare künstliche Intelligenz zu integrieren. Folgende Fragen stellen sich:\\
+    Wie sollten die Abstufungen der verschiedenen Schwierigkeitslevel aussehen? Soll der Bot auf die umliegenden Felder schießen, wenn er ein Schiff getroffen hat und nicht einfach weiter zufällig auf das gegnerische Spielfeld schießen? Wie kann der Computer im schwersten Modus taktisch vorgehen, um möglichst wenige Spielzüge zu tätigen, um ein Schiff zu finden und zu versenken, wenn der Spieler den schweren Modus einstellt?
 
 \subsection{Umsetzung}
-    Der Schwierigkeitsmodus ''Einfach'' soll einen unerfahrener Spieler imitieren der willkürlich auf das Feld feuert. Daher schießt der Bot komplett zufällig, ohne irgendwelche Kriterien oder anderes zu beachten. Dies erfolgt mit der \verb$random.choice$()-Funktion von Python, die aus der \verb$'not_yet_tried'$-Liste des Bots ein zufälliges Feld auswählt und es beschießt.\\
+    Der Schwierigkeitsmodus ''Einfach'' soll einen unerfahrenen Spieler imitieren, der willkürlich auf das Feld feuert. Daher schießt der Bot komplett zufällig, ohne irgendwelche Kriterien zu beachten. Dies erfolgt mit der \verb$random.choice$()-Funktion von Python, die aus der \verb$'not_yet_tried'$-Liste des Bots ein zufälliges Feld auswählt und es beschießt.\\
 
 \par
-    Der ''Mittel'' Schwierigkeitsmodus stellt einen Gelegenheits Spieler dar. Dafür schießt der Bot zuerst auch zufällig auf das Feld. Trifft er aber ein Schiff, wird geschaut welche anliegenden Felder noch nicht beschossen wurden und zu der \verb$next_shot$ Liste hinzugefügt. Daraus werden in den nächsten Zügen Felder zufällig gewählt. Alle Treffer speichert der Computer in seiner Liste \verb$'current_target'$. Falls es beim beschießen der umliegenden Felder wieder zu einem Treffer kommt, dann schaut das Programm, ob die beiden Treffer die gleiche y-Koordinate oder die gleiche x-Koordinate haben. In dem ersten Fall liegt das Schiff wahrscheinlich horizontal auf dem Spielfeld und im zweiten Fall wahrscheinlich vertikal. Nun schießt der Bot auf die anliegenden Felder mit der gleichen y- bzw. x-Koordinate. Wenn nun das Schiff versenkt wird, leert der Bot seine \verb$'current_target'$-Liste und fängt wieder an, zufällig zu schießen bis er einen neuen Treffer bekommt. Falls aber es aber keine freien anliegenden Felder mehr gibt - d. h., die \verb$next_shot$ Liste kommt leer zurück - aber es wurde kein Schiff versenkt, dann geht der Computer davon aus, dass es sich hier um mehrere aneinander liegende Schiffe handelt. Nun kopiert er die Felder aus \verb$'current_target'$ in einer neuen Liste namens \verb$'possible_target'$. Der Computer behandelt jedes dieser Felder als getrenntes Schiffes, und geht jedes davon durch bis jeweils ein Schiff versenkt wird. Danach geht es wieder mit zufälligem Schießen weiter.\\
+    Der Schwierigkeitsmodus ''Mittel'' stellt einen Gelegenheitsspieler dar. Dafür schießt der Bot auch zuerst zufällig auf das Feld. Trifft er aber ein Schiff, wird geschaut, welche anliegenden Felder noch nicht beschossen wurden und diese zu der \verb$next_shot$ Liste hinzugefügt. Daraus werden in den nächsten Zügen Felder zufällig gewählt. Alle Treffer speichert der Computer in seiner Liste \verb$'current_target'$ ab. Falls es beim Beschießen der umliegenden Felder wieder zu einem Treffer kommt, schaut das Programm, ob die beiden Treffer die gleiche y- oder x-Koordinate haben. Im ersten Fall liegt das Schiff wahrscheinlich horizontal auf dem Spielfeld und im zweiten Fall wahrscheinlich vertikal. Nun schießt der Bot auf die anliegenden Felder mit der gleichen y- bzw. x-Koordinate. Wenn nun das Schiff versenkt wird, leert der Bot seine \verb$'current_target'$-Liste und fängt wieder an, zufällig zu schießen, bis er erneut trifft. Falls es keine freien anliegenden Felder mehr gibt - d. h. die \verb$next_shot$ Liste kommt leer zurück - aber kein Schiff versenkt wurde, geht der Computer davon aus, dass es sich hier um mehrere aneinander liegende Schiffe handelt. Nun kopiert er die Felder aus \verb$'current_target'$ in eine neue Liste namens \verb$'possible_target'$. Der Computer behandelt jedes dieser Felder als getrenntes Schiff und geht jedes davon durch, bis jeweils ein Schiff versenkt wird. Danach wird zufällig geschossen.\\
 
 \par
-    Beim Schwierigkeitsmodus ''Schwer'' wird ein erfahrener Spieler simuliert, der effizient spielt und versucht in möglichst wenig Züge alle Schiffe des Gegners aufzudecken. Dafür wird erkannt das der Bot nur auf jedes zweite Feld schießen muss, da das kleinste Schiff zwei Felder lang ist. Falls er schon alle Zwei-Felder Schiffe versenkt hat, ändert sich seine Vorgehensweise und er schießt nur noch auf jedes dritte Feld. Das wird alles in der \verb$smart_random_shot()$-Funktion definiert. Diese prüft, was das kleinste Schiff des Gegners ist und baut darauf basierend verschiedene ''Grids''. Wenn das kleinste Schiff zwei Felder groß ist, sehen die zwei möglichen Grids so aus, wie die schwarzen und weißen Felder eines Schachbrettes. Der Computer zählt nach, wie viele offene Felder die jeweiligen Grids haben, und sucht sich die mit der kleinsten Anzahl aus. In dem er dann seine zufällige Schüsse nur auf diesem Raster betätigt, minimiert er die Anzahl an nötigen Versuchen um alle Schiffe zu finden. Wenn das kleinste übrige Schiffe drei Felder lang ist, ergeben sich die sechs mögliche Grids (Abbildung \ref{fig:3 field ship grids}). Diese bestehen aus diagonalen Linien, die zwei Kästchen Abstand voneinander haben.
+    Beim Schwierigkeitsmodus ''Schwer'' wird ein erfahrener Spieler simuliert, der effizient spielt und versucht in möglichst wenigen Zügen alle Schiffe des Gegners zu versenken. Dafür wird erkannt, dass der Bot nur auf jedes zweite Feld schießen muss, da das kleinste Schiff zwei Felder lang ist. Falls er schon alle Zwei-Felder Schiffe versenkt hat, ändert sich seine Vorgehensweise und er schießt nur noch auf jedes dritte Feld. Das wird alles in der \verb$smart_random_shot()$-Funktion definiert. Diese prüft, was das kleinste Schiff des Gegners ist und baut darauf basierend verschiedene ''Grids''. Wenn das kleinste Schiff zwei Felder groß ist, sehen die zwei möglichen Grids so aus, wie die schwarzen und weißen Felder eines Schachbrettes. Der Computer zählt nach, wie viele offene Felder die jeweiligen Grids haben und sucht sich die mit der kleinsten Anzahl aus. Indem er seine zufälligen Schüsse nur auf dieser Grid betätigt, minimiert er die Anzahl an nötigen Versuchen, um alle Schiffe zu finden. Wenn das kleinste übrige Schiff drei Felder lang ist, ergeben sich die sechs mögliche Grids (Abbildung \ref{fig:3 field ship grids}). Diese bestehen aus diagonalen Linien, die zwei Kästchen Abstand voneinander haben.
 
 \begin{figure}[H]
     \centering
     \includesvg[width=0.95\textwidth]{./Hunting Grids/All Hunting Grids for 3 field ships alt.svg}
-    \caption{Mögliche Grids wenn das kleinste Schiff drei Felder lang ist}
+    \caption{Mögliche Grids, wenn das kleinste Schiff drei Felder lang ist}
     \label{fig:3 field ship grids}
 \end{figure}
 
@@ -194,25 +195,25 @@ for y in range(blueprint_height):
 \end{wrapfigure}
 
 \par
-    Es kann passieren, dass die ideale Grid sich beim Spielen ändert. Ein Beispiel dazu zeigt die Abbildung: \ref{fig:Grid}. Zuerst beschießt der Bot die weißen Kästchen, da es von diesen Feldern weniger gibt als von den schwarzen. So beginnt der Bot hier mit B1 und erzielt ein Treffer. Nun erkennt der Computer, dass dort ein Schiff seien muss und beschießt die umliegenden Felder. Der zweite Schuss geht auf B2 daneben. Mit den nächsten beiden Schüssen A1 und C1 versenkt er das Drei-Feld Schiff. Jetzt sucht der Bot nach dem letztem Schiff und wechselt dafür zur schwarzen Grid, denn jetzt sind nur noch zwei schwarze Kästchen und 3 weiße Kästchen übrig. Damit braucht er nur noch zwei Schüsse um sicher zu sein, das Schiff zu treffen.\\
+    Es kann passieren, dass die ideale Grid sich beim Spielen ändert. Ein Beispiel dazu zeigt die Abbildung \ref{fig:Grid}: Zuerst beschießt der Bot die weißen Kästchen, da es von diesen Feldern weniger gibt als von den Schwarzen. So beginnt der Bot hier mit B1 und erzielt einen Treffer. Nun erkennt der Computer, dass dort ein Schiff sein muss und beschießt die umliegenden Felder. Der zweite Schuss geht auf B2 daneben. Mit den nächsten beiden Schüssen A1 und C1 versenkt er das Drei-Feld-Schiff. Jetzt sucht der Bot nach dem letztem Schiff und wechselt dafür zur schwarzen Grid, denn jetzt sind nur noch zwei schwarze Kästchen und drei weiße Kästchen übrig. Damit braucht er nur noch zwei Schüsse, um sicher zu sein, dass er das Schiff zu trifft.\\
 
 \par
-    Im Listing 3 ist ein Teil der \verb$smart_random_shot()$-Funktion zusehen, die bei dem ''Schwer'' Modus im Einsatz kommt wenn das kleinste Schiff noch am Lebem ist. Dort wird gezeigt, wie die zwei möglichen Grids berechnet und dann miteinander verglichen werden.
+    Im Listing 3 ist ein Teil der \verb$smart_random_shot()$-Funktion zu sehen, die bei dem schweren Modus zum Einsatz kommt, wenn das kleinste Schiff noch am Leben ist. Dort wird gezeigt, wie die zwei möglichen Grids berechnet und dann miteinander verglichen werden:
 \setlist{}%nolistsep} % Wenn wir denn Abstand entfernen wollen
 \begin{itemize}
 \itemsep0em
-    \item Zuerst werden zwei leer Listen herstellt, die die zwei möglichen Grids darstellen sollen. Diese werden \verb$hunting_grid00$ und \verb$hunting_grid01$ benannt.
+    \item Zuerst werden zwei leere Listen erstellt, die die zwei möglichen Grids darstellen sollen. Diese werden \verb$hunting_grid00$ und \verb$hunting_grid01$ benannt.
 
-    \item Nun wird für jedes leere Feld nachgeschaut, zu welchen Grid es gehört, und wird der entsprechenden Liste hinzugefügt. Dafür berechnet das Programm, ob die x-und-y Koordinaten durch Modulo 2 das gleiche Ergebnis haben, also entweder beide 0 oder beide 1 ergeben. Diese Felder werden alle in der \verb$hunting_grid_00$-Liste gespeichert. Die Anderen Felder, also die, bei denen die x-und-y Koordinaten nicht den selben Wert ergeben, wenn sie mit Modulo 2 verrechnet werden, speichert der Computer in der \verb$hunting_grid_01$-Liste.
+    \item Nun wird für jedes leere Feld nachgeschaut, zu welcher Grid es gehört und wird der entsprechenden Liste hinzugefügt. Dafür berechnet das Programm, ob die x- und y-Koordinaten durch Modulo 2 das gleiche Ergebnis haben, also entweder beide 0 oder beide 1 ergeben. Diese Felder werden alle in der \verb$hunting_grid_00$-Liste gespeichert. Die anderen Felder, also die, bei denen die x- und y-Koordinaten nicht den selben Wert ergeben, wenn sie mit Modulo 2 verrechnet werden, speichert der Computer in der \verb$hunting_grid_01$-Liste.
 
-    \item Im nächsten Schritt wählt er einer der zwei Listen zufällig als sein ''Haupt''-\verb$hunting_grid$ aus. Damit soll, im Falle dass die zwei Listen gleich lang sind, sichergestellt werden, dass nicht immer die gleiche benutzt wird.
+    \item Im nächsten Schritt wählt er einen der zwei Listen zufällig als sein ''Haupt''-\verb$hunting_grid$ aus. Damit soll im Falle, dass die zwei Listen gleich lang sind, sichergestellt werden, dass nicht immer die Gleiche benutzt wird.
 
-    \item Diese zufällig ausgewählte List, wird dann mit beiden verglichen. Der Computer wechselt dann nur zur anderen Grid wenn diese weniger Felder in ihrer Liste stehen hat.
+    \item Diese zufällig ausgewählte Liste wird dann mit den beiden anderen Listen verglichen. Der Computer wechselt anschließend nur zur anderen Grid, wenn diese weniger Felder in ihrer Liste stehen hat.
 
-    \item Der Computer kann dann ein Feld zufällig aus seiner \verb$hunting_grid$-Liste ziehen um dorthin zu feuern
+    \item Der Computer kann dann ein Feld zufällig aus seiner \verb$hunting_grid$-Liste ziehen um dorthin zu feuern.
 \end{itemize}
 
-\begin{lstlisting}[language=Python, caption = Herstellung der zwei möglich Grids und deren Vergleich]
+\begin{lstlisting}[language=Python, caption = Herstellung der zwei möglichen Grids und deren Vergleich]
  hunting_grid_00 = []
  hunting_grid_01 = []
 
@@ -238,39 +239,39 @@ for y in range(blueprint_height):
 
 \section{PvP Game}
 \par
-    Beim PvP Modus, ist es möglich, dass 2 Personen an einem Gerät gegeneinander spielen können. In dem Modus können beide Spieler einen Namen auswählen und müssen abwechselnd am Computer ran. Dabei soll sichergestellt werden, dass die Spieler zu keinem Zeitpunkt das Spielfeld des Gegners zu sehen bekommen.
+    Beim PvP-Modus ist es möglich, dass zwei Personen an einem Gerät gegeneinander spielen können. In diesem Modus können beide Spieler einen Namen auswählen und müssen sich miteinander am Computer abwechseln. Dabei soll sichergestellt werden, dass die Spieler zu keinem Zeitpunkt das Spielfeld des Gegners zu sehen bekommen.
 \subsection{Umsetzung}
-    Dieses Spielmodus sieht in der Umsetzung dem PvE-Spiel sehr ähnlich. Damit die Spieler  die Position der Schiffe des anderen nicht nie erfahren können, wird zwischen jedem Spielzug der Bildschirm ''geleert'', und die Spieler werden dazu aufgefordert die Plätze zu tauschen bevor es weiter geht. Da ein Löschen der ganzen Konsole sehr umständlich wäre, wurde das stattdessen mit der \verb$clear_screen()$-Funktion gemacht. Diese gibt 50 leere Zeilen aus, um somit das Spielfeld des Gegners zumindestens aus dem direkt sichtbaren bereich Konsole zu entfernen.
+    Dieser Spielmodus sieht in der Umsetzung dem PvE-Spiel sehr ähnlich. Damit die Spieler  die Position der Schiffe des anderen nicht erfahren können, wird zwischen jedem Spielzug der Bildschirm ''geleert'' und die Spieler werden dazu aufgefordert, die Plätze zu tauschen, bevor es weiter geht. Da ein Löschen der ganzen Konsole sehr umständlich wäre, wurde dies stattdessen mit der \verb$clear_screen()$-Funktion gewährleistet. Diese gibt 50 leere Zeilen aus, um somit das Spielfeld des Gegners zumindestens aus dem direkt sichtbaren Bereich der Konsole zu entfernen.
 
 
 \section{Counter}
-    Die Funktion ist dafür da, um die Zeit der Benutzereingabe zeitlich zu begrenzen. Sobald der Spieler aufgefordert wir ein gegnerisches Feld zu beschießen,  läuft ein Countdown runter, der aufzeigt wie viel Zeit noch übrig bleibt. Der Zeitraum wurde auf 15 Sekunden festgelegt. Sollte der Spieler innerhalb der gegebenen Zeit ein gegnerisches Schiff beschießen, wird der Countdown beendet und das Spiel fortgesetzt, in dem der andere Spieler nun aufgefordert wird ein gegnerisches Feld zu beschießen. Sollte der Spieler bis Ablauf der Zeit noch kein Feld ausgewählt haben, wird dem Spieler angezeigt, dass seine Zeit abgelaufen ist und er nun die Enter-Taste drücken soll. Durch das Drücken der Enter-Taste wird ein zufälliges Feld beschossen und das Spiel fortgesetzt.
+    Die Funktion ist dafür da, die Zeit der Benutzereingabe zeitlich zu begrenzen. Sobald der Spieler aufgefordert wird ein gegnerisches Feld zu beschießen,  läuft ein Countdown, der aufzeigt, wie viel Zeit noch übrig bleibt. Der Zeitraum wurde auf 15 Sekunden festgelegt. Sollte der Spieler innerhalb der gegebenen Zeit ein gegnerisches Schiff beschießen, wird der Countdown beendet und das Spiel fortgesetzt, indem der andere Spieler nun aufgefordert wird, ein gegnerisches Feld zu beschießen. Sollte der Spieler bis Ablauf der Zeit noch kein Feld ausgewählt haben, wird dem Spieler angezeigt, dass seine Zeit abgelaufen ist und er nun die Enter-Taste drücken soll. Durch das Drücken der Enter-Taste wird ein zufälliges Feld beschossen und das Spiel fortgesetzt.
     Diese Funktion wird jedes Mal aufgerufen, wenn der Spieler ein Feld beschießen muss.
 
 \subsection{Problemstellung}
-    Ein Problem der Aufgabenstellung war, dass zwei Prozesse gleichzeitig laufen müssen. Zum einen muss der Countdown von 15 bis 0 runterlaufen, zum anderen muss gleichzeitig auf einen Benutzereingabe gewartet werden. Zu beginn gab es das Problem, dass der Countdown erst gestartet ist, nach dem es eine Benutzereingabe gab. Dies machte den Countdown jedoch unbrauchbar, da es parallel laufen muss.
+    Ein Problem der Aufgabenstellung war, dass zwei Prozesse gleichzeitig laufen müssen. Zum einen muss der Countdown von 15 bis 0 herunterlaufen, zum anderen muss gleichzeitig auf eine Benutzereingabe gewartet werden. Zu Beginn war das Problem, dass der Countdown erst gestartet ist, nachdem es eine Benutzereingabe gab. Dies machte den Countdown jedoch unbrauchbar, da beides parallel laufen muss.
 
 \subsection{Lösungsversuch}
-    Um nun mehrere Prozesse gleichzeitig laufen zu lassen musste eine andere Lösung her. Durch etwas Recherche wurde die Benutzung von ''threads'' als Möglichkeit gefunden. Diese sollten einen parallelen Ablauf von mehreren Prozessen möglich machen. Die Datei ist wie folgt aufgebaut:
+    Um nun mehrere Prozesse gleichzeitig laufen zu lassen, musste eine andere Lösung her. Durch Recherche wurde die Benutzung von ''threads'' als Möglichkeit gefunden. Diese sollten einen parallelen Ablauf von mehreren Prozessen ermöglichen. Die Datei ist wie folgt aufgebaut:
     \setlist{}%nolistsep} % Wenn wir denn Abstand entfernen wollen
 \begin{itemize}
 \itemsep0em
     \item
-    Es gibt die \verb$ask()$-Funktion. Diese Funktion nimmt die Benutzereingabe auf und gibt sie später, am Ende zurück.
+    Es gibt die \verb$ask()$-Funktion. Diese Funktion nimmt die Benutzereingabe auf und gibt sie am Ende zurück.
     \item
     Die Funktion \verb$exit(msg)$ wird aufgerufen, wenn eine Benutzereingabe erfolgt ist oder wenn keine Eingabe erfolgt ist. In beiden Fällen gibt die Funktion einen Textwert zurück, der als Parameter gegeben werden muss. Es wird beispielsweise ausgegeben, dass die Zeit abgelaufen ist und nun ein zufälliges Feld beschossen wird oder es wird ausgegeben, auf welches Feld geschossen wurde.
     \item
-    Die Funktion \verb$countdown()$ gibt die verbliebene Zeit an. Innerhalb der Funktion ist eine Endlosschleife die läuft, bis der Stop-Wert null erreicht wird. Der Wert beginnt bei 15 und wird  jede Runde, mit einer Verzögerung von 2 Sekunden um den Wert 2 verringert. Bei jeden Schleifendurchgang wird die aktuell verbliebene Zeit ausgegeben. Wichtig  ist hierbei zusagen, dass in der Gesamten zeit eine Benutzereingabe parallel möglich ist.
+    Die Funktion \verb$countdown()$ gibt die verbliebene Zeit an. Innerhalb der Funktion ist eine Endlosschleife die läuft, bis der Stop-Wert null erreicht wird. Der Wert beginnt bei 15 und wird  jede Runde, mit einer Verzögerung von 2 Sekunden um den Wert 2 verringert. Bei jedem Schleifendurchgang wird die aktuell verbliebene Zeit ausgegeben. Wichtig  ist hierbei zu sagen, dass in der gesamten Zeit eine Benutzereingabe parallel möglich ist.
     \item
-    Die Funktion \verb$close_if_time_pass(seconds)$ wird als letztes aufgerufen und gibt aus, dass die Zeit abgelaufen ist.
+    Die Funktion \verb$close_if_time_pass(seconds)$ wird als letztes aufgerufen und gibt aus, dass die Zeit abgelaufen ist. Diese ist nur notwendig, wenn der Fall eintritt, dass es keine Benutzereingabe gab.
     \item
     Alle diese Funktionen werden in der Wichtigsten von allen, der \verb$main()$ Funktion, aufgerufen.
     \end{itemize}
     \par
-    In der Funktion \verb$main()$, wurde, wie bereits erwähnt, mit ''threads'' gearbeitet. Es waren zwei ''threads'' nötig. Der Erste ist dafür da, um nach Ablauf der Zeit (in unserem Fall 15 Sekunden) auszugeben, dass die Zeit abgelaufen ist und nun vom Spiel selbst, ein zufälliges Feld ausgewählt wird. Der zweite ''thread'' ist dazu da, den Countdown zu starten. Sobald die ''threads'' gestartet werden, wird die Funktion \verb$ask()$ aufgerufen, welche auf die Benutzereingabe wartet. Der Rückgabewert aus der Funktion \verb$ask()$, wird gespeichert in der Variable \verb$user_input$. Es wird nach Ablauf der Zeit geprüft, ob die Variable keinen Wert hat. Sollte dies der Fall sein, wird ein zufälliges Feld beschossen, mit der Funktion \verb$random_ship_attack$, aus der Date gamefunctions. Sollte die Variable jedoch einen Wert haben, wird dieser Wert als Rückgabewert genutzt und somit das eingegeben Feld beschossen.
+    In der Funktion \verb$main()$, wurde, wie bereits erwähnt, mit ''threads'' gearbeitet. Es waren zwei ''threads'' nötig. Der Erste ist dafür da, um nach Ablauf der Zeit (in unserem Fall 15 Sekunden) auszugeben, dass die Zeit abgelaufen ist und nun vom Spiel selbst, ein zufälliges Feld ausgewählt wird. Der zweite ''thread'' ist dazu da, den Countdown zu starten. Sobald die ''threads'' gestartet werden, wird die Funktion \verb$ask()$ aufgerufen, welche auf die Benutzereingabe wartet. Der Rückgabewert aus der Funktion \verb$ask()$, wird gespeichert in der Variable \verb$user_input$. Es wird nach Ablauf der Zeit geprüft, ob die Variable keinen Wert hat. Sollte dies der Fall sein, wird ein zufälliges Feld beschossen, mit der Funktion \verb$random_ship_attack$, aus der Datei gamefunctions. Sollte die Variable jedoch einen Wert haben, wird dieser Wert als Rückgabewert genutzt und somit das eingegeben Feld beschossen.
 
 
-\begin{lstlisting}[language=Python, caption=Main Funktion des Countdowns]
+\begin{lstlisting}[language=Python, caption=main()-Funktion des Countdowns]
 def main(player, language):
     global start_sign, check
 
@@ -301,5 +302,7 @@ def main(player, language):
 \end{lstlisting}
 
 \section{Schlusswort}
+    Dieses Pojekt war eine gute Herausforderung, um zu lernen, mit der Programmiersprache Python umzugehen.
+    Ein paar Erweiterungsmöglichkeiten des Programms wären bspw. die Option, die Eingabe der Felder über die Maus betätigen zu können oder das Spiel über das Internet auf zwei verschiedenen Computern spielen zu können. Außerdem könnte die künstliche Intelligenz verbessert werden, indem man einen Algorithmus integrieren würde, um ein Wahrscheinlichkeitsfeld der Verteilung der Schiffe aufzustellen, sodass der Bot immer nur auf das Feld schießen könnte, auf welchem ein Schiff am wahrscheinlichsten platziert ist.
 
 \end{document}
